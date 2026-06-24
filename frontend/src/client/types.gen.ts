@@ -9,6 +9,65 @@ export type Body_login_login_access_token = {
     client_secret?: (string | null);
 };
 
+export type DepartmentCreate = {
+    name: string;
+    description?: (string | null);
+    is_active?: boolean;
+};
+
+export type DepartmentPublic = {
+    name: string;
+    description?: (string | null);
+    is_active?: boolean;
+    id: string;
+    created_at?: (string | null);
+};
+
+export type DepartmentsPublic = {
+    data: Array<DepartmentPublic>;
+    count: number;
+};
+
+export type DepartmentUpdate = {
+    name?: (string | null);
+    description?: (string | null);
+    is_active?: (boolean | null);
+};
+
+export type EmployeeCreate = {
+    full_name: string;
+    email: string;
+    job_title: string;
+    phone?: (string | null);
+    is_active?: boolean;
+    department_id: string;
+};
+
+export type EmployeePublic = {
+    full_name: string;
+    email: string;
+    job_title: string;
+    phone?: (string | null);
+    is_active?: boolean;
+    id: string;
+    department_id: string;
+    created_at?: (string | null);
+};
+
+export type EmployeesPublic = {
+    data: Array<EmployeePublic>;
+    count: number;
+};
+
+export type EmployeeUpdate = {
+    full_name?: (string | null);
+    email?: (string | null);
+    job_title?: (string | null);
+    phone?: (string | null);
+    is_active?: (boolean | null);
+    department_id?: (string | null);
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -66,6 +125,7 @@ export type UserCreate = {
     email: string;
     is_active?: boolean;
     is_superuser?: boolean;
+    role?: ("admin" | "manager" | "employee");
     full_name?: (string | null);
     password: string;
 };
@@ -74,6 +134,7 @@ export type UserPublic = {
     email: string;
     is_active?: boolean;
     is_superuser?: boolean;
+    role?: ("admin" | "manager" | "employee");
     full_name?: (string | null);
     id: string;
     created_at?: (string | null);
@@ -94,6 +155,7 @@ export type UserUpdate = {
     email?: (string | null);
     is_active?: boolean;
     is_superuser?: boolean;
+    role?: ("admin" | "manager" | "employee");
     full_name?: (string | null);
     password?: (string | null);
 };
@@ -112,6 +174,70 @@ export type ValidationError = {
         [key: string]: unknown;
     };
 };
+
+export type DepartmentsReadDepartmentsData = {
+    limit?: number;
+    skip?: number;
+};
+
+export type DepartmentsReadDepartmentsResponse = (DepartmentsPublic);
+
+export type DepartmentsCreateDepartmentData = {
+    requestBody: DepartmentCreate;
+};
+
+export type DepartmentsCreateDepartmentResponse = (DepartmentPublic);
+
+export type DepartmentsReadDepartmentData = {
+    departmentId: string;
+};
+
+export type DepartmentsReadDepartmentResponse = (DepartmentPublic);
+
+export type DepartmentsUpdateDepartmentData = {
+    departmentId: string;
+    requestBody: DepartmentUpdate;
+};
+
+export type DepartmentsUpdateDepartmentResponse = (DepartmentPublic);
+
+export type DepartmentsDeleteDepartmentData = {
+    departmentId: string;
+};
+
+export type DepartmentsDeleteDepartmentResponse = (Message);
+
+export type EmployeesReadEmployeesData = {
+    limit?: number;
+    skip?: number;
+};
+
+export type EmployeesReadEmployeesResponse = (EmployeesPublic);
+
+export type EmployeesCreateEmployeeData = {
+    requestBody: EmployeeCreate;
+};
+
+export type EmployeesCreateEmployeeResponse = (EmployeePublic);
+
+export type EmployeesReadEmployeeData = {
+    employeeId: string;
+};
+
+export type EmployeesReadEmployeeResponse = (EmployeePublic);
+
+export type EmployeesUpdateEmployeeData = {
+    employeeId: string;
+    requestBody: EmployeeUpdate;
+};
+
+export type EmployeesUpdateEmployeeResponse = (EmployeePublic);
+
+export type EmployeesDeleteEmployeeData = {
+    employeeId: string;
+};
+
+export type EmployeesDeleteEmployeeResponse = (Message);
 
 export type ItemsReadItemsData = {
     limit?: number;

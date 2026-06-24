@@ -57,6 +57,360 @@ export const Body_login_login_access_tokenSchema = {
     title: 'Body_login-login_access_token'
 } as const;
 
+export const DepartmentCreateSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        is_active: {
+            type: 'boolean',
+            title: 'Is Active',
+            default: true
+        }
+    },
+    type: 'object',
+    required: ['name'],
+    title: 'DepartmentCreate'
+} as const;
+
+export const DepartmentPublicSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        is_active: {
+            type: 'boolean',
+            title: 'Is Active',
+            default: true
+        },
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['name', 'id'],
+    title: 'DepartmentPublic'
+} as const;
+
+export const DepartmentUpdateSchema = {
+    properties: {
+        name: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        is_active: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Is Active'
+        }
+    },
+    type: 'object',
+    title: 'DepartmentUpdate'
+} as const;
+
+export const DepartmentsPublicSchema = {
+    properties: {
+        data: {
+            items: {
+                '$ref': '#/components/schemas/DepartmentPublic'
+            },
+            type: 'array',
+            title: 'Data'
+        },
+        count: {
+            type: 'integer',
+            title: 'Count'
+        }
+    },
+    type: 'object',
+    required: ['data', 'count'],
+    title: 'DepartmentsPublic'
+} as const;
+
+export const EmployeeCreateSchema = {
+    properties: {
+        full_name: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Full Name'
+        },
+        email: {
+            type: 'string',
+            maxLength: 255,
+            format: 'email',
+            title: 'Email'
+        },
+        job_title: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Job Title'
+        },
+        phone: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 50
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Phone'
+        },
+        is_active: {
+            type: 'boolean',
+            title: 'Is Active',
+            default: true
+        },
+        department_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Department Id'
+        }
+    },
+    type: 'object',
+    required: ['full_name', 'email', 'job_title', 'department_id'],
+    title: 'EmployeeCreate'
+} as const;
+
+export const EmployeePublicSchema = {
+    properties: {
+        full_name: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Full Name'
+        },
+        email: {
+            type: 'string',
+            maxLength: 255,
+            format: 'email',
+            title: 'Email'
+        },
+        job_title: {
+            type: 'string',
+            maxLength: 255,
+            minLength: 1,
+            title: 'Job Title'
+        },
+        phone: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 50
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Phone'
+        },
+        is_active: {
+            type: 'boolean',
+            title: 'Is Active',
+            default: true
+        },
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        department_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Department Id'
+        },
+        created_at: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['full_name', 'email', 'job_title', 'id', 'department_id'],
+    title: 'EmployeePublic'
+} as const;
+
+export const EmployeeUpdateSchema = {
+    properties: {
+        full_name: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Full Name'
+        },
+        email: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    format: 'email'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Email'
+        },
+        job_title: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 255,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Job Title'
+        },
+        phone: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 50
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Phone'
+        },
+        is_active: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Is Active'
+        },
+        department_id: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Department Id'
+        }
+    },
+    type: 'object',
+    title: 'EmployeeUpdate'
+} as const;
+
+export const EmployeesPublicSchema = {
+    properties: {
+        data: {
+            items: {
+                '$ref': '#/components/schemas/EmployeePublic'
+            },
+            type: 'array',
+            title: 'Data'
+        },
+        count: {
+            type: 'integer',
+            title: 'Count'
+        }
+    },
+    type: 'object',
+    required: ['data', 'count'],
+    title: 'EmployeesPublic'
+} as const;
+
 export const HTTPValidationErrorSchema = {
     properties: {
         detail: {
@@ -306,6 +660,12 @@ export const UserCreateSchema = {
             title: 'Is Superuser',
             default: false
         },
+        role: {
+            type: 'string',
+            enum: ['admin', 'manager', 'employee'],
+            title: 'Role',
+            default: 'employee'
+        },
         full_name: {
             anyOf: [
                 {
@@ -347,6 +707,12 @@ export const UserPublicSchema = {
             type: 'boolean',
             title: 'Is Superuser',
             default: false
+        },
+        role: {
+            type: 'string',
+            enum: ['admin', 'manager', 'employee'],
+            title: 'Role',
+            default: 'employee'
         },
         full_name: {
             anyOf: [
@@ -439,6 +805,12 @@ export const UserUpdateSchema = {
             type: 'boolean',
             title: 'Is Superuser',
             default: false
+        },
+        role: {
+            type: 'string',
+            enum: ['admin', 'manager', 'employee'],
+            title: 'Role',
+            default: 'employee'
         },
         full_name: {
             anyOf: [
