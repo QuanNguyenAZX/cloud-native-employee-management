@@ -1,16 +1,26 @@
-import uuid
 from datetime import datetime
-from typing import Literal
+from enum import Enum
+import uuid
 
 from pydantic import EmailStr
+from sqlalchemy import String
 from sqlmodel import Field, SQLModel
+
+
+class UserRole(str, Enum):
+    admin = "admin"
+    manager = "manager"
+    employee = "employee"
 
 
 class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     is_active: bool = True
     is_superuser: bool = False
-    role: Literal["admin", "manager", "employee"] = "employee"
+    role: UserRole = Field(
+        default=UserRole.employee,
+        sa_type=String(length=20),
+    )
     full_name: str | None = Field(default=None, max_length=255)
 
 
