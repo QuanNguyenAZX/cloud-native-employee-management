@@ -50,8 +50,24 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 def get_current_active_superuser(current_user: CurrentUser) -> User:
-    if not current_user.is_superuser:
+    if not (current_user.is_superuser or current_user.role == "admin"):
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"
         )
     return current_user
+
+
+def get_current_manager_or_admin(current_user: CurrentUser) -> User:
+    if current_user.is_superuser or current_user.role in {"admin", "manager"}:
+        return current_user
+    raise HTTPException(
+        status_code=403, detail="The user doesn't have enough privileges"
+    )
+
+
+def get_current_employee_or_higher(current_user: CurrentUser) -> User:
+    if current_user.is_superuser or current_user.role in {"admin", "manager", "employee"}:
+        return current_user
+    raise HTTPException(
+        status_code=403, detail="The user doesn't have enough privileges"
+    )
