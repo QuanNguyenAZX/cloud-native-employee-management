@@ -26,6 +26,9 @@ export type DepartmentPublic = {
 export type DepartmentsPublic = {
     data: Array<DepartmentPublic>;
     count: number;
+    page: number;
+    size: number;
+    pages: number;
 };
 
 export type DepartmentUpdate = {
@@ -57,6 +60,9 @@ export type EmployeePublic = {
 export type EmployeesPublic = {
     data: Array<EmployeePublic>;
     count: number;
+    page: number;
+    size: number;
+    pages: number;
 };
 
 export type EmployeeUpdate = {
@@ -176,8 +182,8 @@ export type ValidationError = {
 };
 
 export type DepartmentsReadDepartmentsData = {
-    limit?: number;
-    skip?: number;
+    page?: number;
+    size?: number;
 };
 
 export type DepartmentsReadDepartmentsResponse = (DepartmentsPublic);
@@ -208,8 +214,8 @@ export type DepartmentsDeleteDepartmentData = {
 export type DepartmentsDeleteDepartmentResponse = (Message);
 
 export type EmployeesReadEmployeesData = {
-    limit?: number;
-    skip?: number;
+    page?: number;
+    size?: number;
 };
 
 export type EmployeesReadEmployeesResponse = (EmployeesPublic);

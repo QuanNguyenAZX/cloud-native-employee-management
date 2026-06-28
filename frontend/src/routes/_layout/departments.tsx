@@ -10,7 +10,7 @@ import { DataTable } from "@/components/Common/DataTable"
 
 function getDepartmentsQueryOptions() {
   return {
-    queryFn: () => DepartmentsService.readDepartments({ skip: 0, limit: 100 }),
+    queryFn: () => DepartmentsService.readDepartments({ page: 1, size: 100 }),
     queryKey: ["departments"],
   }
 }

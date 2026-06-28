@@ -39,12 +39,12 @@ function Dashboard() {
   })
   const departmentsQuery = useQuery({
     queryKey: ["dashboard", "departments"],
-    queryFn: () => DepartmentsService.readDepartments({ skip: 0, limit: 1 }),
+    queryFn: () => DepartmentsService.readDepartments({ page: 1, size: 1 }),
     enabled: isManagerOrAdmin,
   })
   const employeesQuery = useQuery({
     queryKey: ["dashboard", "employees"],
-    queryFn: () => EmployeesService.readEmployees({ skip: 0, limit: 1 }),
+    queryFn: () => EmployeesService.readEmployees({ page: 1, size: 1 }),
     enabled: isAdmin,
   })
 

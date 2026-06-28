@@ -9,8 +9,8 @@ export class DepartmentsService {
     /**
      * Read Departments
      * @param data The data for the request.
-     * @param data.skip
-     * @param data.limit
+     * @param data.page
+     * @param data.size
      * @returns DepartmentsPublic Successful Response
      * @throws ApiError
      */
@@ -19,8 +19,8 @@ export class DepartmentsService {
             method: 'GET',
             url: '/api/v1/departments/',
             query: {
-                skip: data.skip,
-                limit: data.limit
+                page: data.page,
+                size: data.size
             },
             errors: {
                 422: 'Validation Error'
@@ -115,8 +115,8 @@ export class EmployeesService {
     /**
      * Read Employees
      * @param data The data for the request.
-     * @param data.skip
-     * @param data.limit
+     * @param data.page
+     * @param data.size
      * @returns EmployeesPublic Successful Response
      * @throws ApiError
      */
@@ -125,8 +125,8 @@ export class EmployeesService {
             method: 'GET',
             url: '/api/v1/employees/',
             query: {
-                skip: data.skip,
-                limit: data.limit
+                page: data.page,
+                size: data.size
             },
             errors: {
                 422: 'Validation Error'

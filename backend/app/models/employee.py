@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class Employee(EmployeeBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    email: str = Field(unique=True, index=True, max_length=255)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore

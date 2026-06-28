@@ -15,14 +15,14 @@ import { DataTable } from "@/components/Common/DataTable"
 
 function getEmployeesQueryOptions() {
   return {
-    queryFn: () => EmployeesService.readEmployees({ skip: 0, limit: 100 }),
+    queryFn: () => EmployeesService.readEmployees({ page: 1, size: 100 }),
     queryKey: ["employees"],
   }
 }
 
 function getDepartmentsQueryOptions() {
   return {
-    queryFn: () => DepartmentsService.readDepartments({ skip: 0, limit: 100 }),
+    queryFn: () => DepartmentsService.readDepartments({ page: 1, size: 100 }),
     queryKey: ["departments"],
   }
 }
