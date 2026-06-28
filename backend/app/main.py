@@ -28,7 +28,7 @@ app = FastAPI(
 async def http_exception_handler(_, exc: StarletteHTTPException):
     return JSONResponse(
         status_code=exc.status_code,
-        content={"success": False, "data": None, "message": exc.detail},
+        content={"detail": exc.detail},
     )
 
 
@@ -36,12 +36,7 @@ async def http_exception_handler(_, exc: StarletteHTTPException):
 async def validation_exception_handler(_, exc: RequestValidationError):
     return JSONResponse(
         status_code=422,
-        content={
-            "success": False,
-            "data": None,
-            "message": "Validation error",
-            "errors": exc.errors(),
-        },
+        content={"detail": exc.errors()},
     )
 
 # Set all CORS enabled origins
