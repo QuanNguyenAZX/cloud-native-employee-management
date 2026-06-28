@@ -3,17 +3,18 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime
-from sqlmodel import Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
-from app.models.user import get_datetime_utc
-from app.schemas.item import ItemBase
+from app.models.utils import get_datetime_utc
 
 if TYPE_CHECKING:
     from app.models.user import User
 
 
-class Item(ItemBase, table=True):
+class Item(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    title: str = Field(min_length=1, max_length=255)
+    description: str | None = Field(default=None, max_length=255)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
