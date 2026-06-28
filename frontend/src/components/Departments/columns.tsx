@@ -15,7 +15,12 @@ export const columns: ColumnDef<DepartmentPublic>[] = [
     accessorKey: "description",
     header: "Description",
     cell: ({ row }) => (
-      <span className={cn("text-muted-foreground", !row.original.description && "italic")}>
+      <span
+        className={cn(
+          "text-muted-foreground",
+          !row.original.description && "italic",
+        )}
+      >
         {row.original.description || "No description"}
       </span>
     ),

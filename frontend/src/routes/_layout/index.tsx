@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { Building2, Briefcase, UserRound, Users } from "lucide-react"
+import { Briefcase, Building2, UserRound, Users } from "lucide-react"
 
 import {
   DepartmentsService,
@@ -24,7 +24,9 @@ export const Route = createFileRoute("/_layout/")({
 
 function Dashboard() {
   const { user: currentUser } = useAuth()
-  const isAdmin = Boolean(currentUser?.is_superuser || currentUser?.role === "admin")
+  const isAdmin = Boolean(
+    currentUser?.is_superuser || currentUser?.role === "admin",
+  )
   const isManagerOrAdmin = Boolean(isAdmin || currentUser?.role === "manager")
 
   const itemsQuery = useQuery({
@@ -66,8 +68,12 @@ function Dashboard() {
             <Briefcase className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{itemsQuery.data?.count ?? 0}</div>
-            <p className="text-xs text-muted-foreground">Visible in your account</p>
+            <div className="text-2xl font-bold">
+              {itemsQuery.data?.count ?? 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Visible in your account
+            </p>
           </CardContent>
         </Card>
 
@@ -78,7 +84,7 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isAdmin ? usersQuery.data?.count ?? 0 : 1}
+              {isAdmin ? (usersQuery.data?.count ?? 0) : 1}
             </div>
             <p className="text-xs text-muted-foreground">
               {isAdmin ? "Registered accounts" : "Your account"}
@@ -93,7 +99,7 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isManagerOrAdmin ? departmentsQuery.data?.count ?? 0 : "-"}
+              {isManagerOrAdmin ? (departmentsQuery.data?.count ?? 0) : "-"}
             </div>
             <p className="text-xs text-muted-foreground">
               {isManagerOrAdmin ? "Active department records" : "Admin only"}
@@ -108,7 +114,7 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isAdmin ? employeesQuery.data?.count ?? 0 : "-"}
+              {isAdmin ? (employeesQuery.data?.count ?? 0) : "-"}
             </div>
             <p className="text-xs text-muted-foreground">
               {isAdmin ? "Total employee profiles" : "Admin only"}

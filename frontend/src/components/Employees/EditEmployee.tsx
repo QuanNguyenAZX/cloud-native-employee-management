@@ -56,7 +56,11 @@ interface EditEmployeeProps {
   onSuccess: () => void
 }
 
-const EditEmployee = ({ employee, departments, onSuccess }: EditEmployeeProps) => {
+const EditEmployee = ({
+  employee,
+  departments,
+  onSuccess,
+}: EditEmployeeProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const queryClient = useQueryClient()
   const { showSuccessToast, showErrorToast } = useCustomToast()

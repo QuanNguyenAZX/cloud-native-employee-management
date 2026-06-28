@@ -28,7 +28,10 @@ export const DepartmentActionsMenu = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <EditDepartment department={department} onSuccess={() => setOpen(false)} />
+        <EditDepartment
+          department={department}
+          onSuccess={() => setOpen(false)}
+        />
         <DeleteDepartment id={department.id} onSuccess={() => setOpen(false)} />
       </DropdownMenuContent>
     </DropdownMenu>

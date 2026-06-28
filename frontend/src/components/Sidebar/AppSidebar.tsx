@@ -29,7 +29,9 @@ export function AppSidebar() {
     ...(canViewDepartments
       ? [{ icon: Building2, title: "Departments", path: "/departments" }]
       : []),
-    ...(isAdmin ? [{ icon: Users, title: "Employees", path: "/employees" }] : []),
+    ...(isAdmin
+      ? [{ icon: Users, title: "Employees", path: "/employees" }]
+      : []),
     ...(isAdmin ? [{ icon: Users, title: "Admin", path: "/admin" }] : []),
   ]
 

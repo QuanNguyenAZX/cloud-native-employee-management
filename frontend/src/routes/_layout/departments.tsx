@@ -3,10 +3,10 @@ import { createFileRoute, redirect } from "@tanstack/react-router"
 import { Suspense } from "react"
 
 import { DepartmentsService, UsersService } from "@/client"
+import { DataTable } from "@/components/Common/DataTable"
 import AddDepartment from "@/components/Departments/AddDepartment"
 import { columns } from "@/components/Departments/columns"
 import PendingDepartments from "@/components/Departments/PendingDepartments"
-import { DataTable } from "@/components/Common/DataTable"
 
 function getDepartmentsQueryOptions() {
   return {
@@ -19,7 +19,9 @@ export const Route = createFileRoute("/_layout/departments")({
   component: Departments,
   beforeLoad: async () => {
     const user = await UsersService.readUserMe()
-    if (!(user.is_superuser || user.role === "admin" || user.role === "manager")) {
+    if (
+      !(user.is_superuser || user.role === "admin" || user.role === "manager")
+    ) {
       throw redirect({ to: "/" })
     }
   },

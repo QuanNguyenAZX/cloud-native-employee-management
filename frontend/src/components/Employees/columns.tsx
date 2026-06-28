@@ -9,16 +9,22 @@ export type EmployeeTableData = EmployeePublic & {
   department_name: string
 }
 
-export const columns = (departments: DepartmentPublic[]): ColumnDef<EmployeeTableData>[] => [
+export const columns = (
+  departments: DepartmentPublic[],
+): ColumnDef<EmployeeTableData>[] => [
   {
     accessorKey: "full_name",
     header: "Full Name",
-    cell: ({ row }) => <span className="font-medium">{row.original.full_name}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium">{row.original.full_name}</span>
+    ),
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <span className="text-muted-foreground">{row.original.email}</span>,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">{row.original.email}</span>
+    ),
   },
   {
     accessorKey: "job_title",
@@ -28,7 +34,11 @@ export const columns = (departments: DepartmentPublic[]): ColumnDef<EmployeeTabl
     accessorKey: "department_name",
     header: "Department",
     cell: ({ row }) => (
-      <span className={cn(!row.original.department_name && "italic text-muted-foreground")}>
+      <span
+        className={cn(
+          !row.original.department_name && "italic text-muted-foreground",
+        )}
+      >
         {row.original.department_name || "Unknown"}
       </span>
     ),
@@ -47,7 +57,10 @@ export const columns = (departments: DepartmentPublic[]): ColumnDef<EmployeeTabl
     header: () => <span className="sr-only">Actions</span>,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <EmployeeActionsMenu employee={row.original} departments={departments} />
+        <EmployeeActionsMenu
+          employee={row.original}
+          departments={departments}
+        />
       </div>
     ),
   },

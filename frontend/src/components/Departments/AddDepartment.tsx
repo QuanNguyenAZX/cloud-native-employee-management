@@ -100,7 +100,11 @@ const AddDepartment = () => {
                       Name <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Department name" {...field} required />
+                      <Input
+                        placeholder="Department name"
+                        {...field}
+                        required
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

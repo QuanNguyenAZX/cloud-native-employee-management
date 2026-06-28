@@ -3,15 +3,15 @@ import { createFileRoute, redirect } from "@tanstack/react-router"
 import { Suspense } from "react"
 
 import {
+  type DepartmentPublic,
   DepartmentsService,
   EmployeesService,
   UsersService,
-  type DepartmentPublic,
 } from "@/client"
+import { DataTable } from "@/components/Common/DataTable"
 import AddEmployee from "@/components/Employees/AddEmployee"
 import { columns, type EmployeeTableData } from "@/components/Employees/columns"
 import PendingEmployees from "@/components/Employees/PendingEmployees"
-import { DataTable } from "@/components/Common/DataTable"
 
 function getEmployeesQueryOptions() {
   return {
