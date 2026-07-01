@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { UsersService, type UserUpdateMe } from "@/client"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Form,
   FormControl,
@@ -19,7 +20,7 @@ import { LoadingButton } from "@/components/ui/loading-button"
 import useAuth from "@/hooks/useAuth"
 import useCustomToast from "@/hooks/useCustomToast"
 import { cn } from "@/lib/utils"
-import { handleError } from "@/utils"
+import { getInitials, handleError } from "@/utils"
 
 const formSchema = z.object({
   full_name: z.string().max(30).optional(),
@@ -32,6 +33,7 @@ const UserInformation = () => {
   const queryClient = useQueryClient()
   const { showSuccessToast, showErrorToast } = useCustomToast()
   const [editMode, setEditMode] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement | null>(null)
   const { user: currentUser } = useAuth()
 
   const form = useForm<FormData>({
@@ -61,6 +63,32 @@ const UserInformation = () => {
     },
   })
 
+  const avatarMutation = useMutation({
+    mutationFn: (file: File) =>
+      UsersService.updateUserAvatarMe({ formData: { file } }),
+    onSuccess: () => {
+      showSuccessToast("Avatar updated successfully")
+      if (avatarInputRef.current) {
+        avatarInputRef.current.value = ""
+      }
+    },
+    onError: handleError.bind(showErrorToast),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] })
+    },
+  })
+
+  const deleteAvatarMutation = useMutation({
+    mutationFn: () => UsersService.deleteUserAvatarMe(),
+    onSuccess: () => {
+      showSuccessToast("Avatar removed successfully")
+    },
+    onError: handleError.bind(showErrorToast),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] })
+    },
+  })
+
   const onSubmit = (data: FormData) => {
     const updateData: UserUpdateMe = {}
 
@@ -83,6 +111,59 @@ const UserInformation = () => {
   return (
     <div className="max-w-md">
       <h3 className="text-lg font-semibold py-4">User Information</h3>
+      <div className="mb-6 rounded-2xl border bg-card p-4 shadow-sm">
+        <div className="flex items-center gap-4">
+          <Avatar className="size-20">
+            {currentUser?.avatar_url ? (
+              <AvatarImage
+                src={currentUser.avatar_url}
+                alt={currentUser?.full_name || "User"}
+              />
+            ) : null}
+            <AvatarFallback className="bg-zinc-700 text-white text-lg">
+              {getInitials(currentUser?.full_name || "User")}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <div>
+              <p className="font-medium">Avatar</p>
+              <p className="text-sm text-muted-foreground">
+                Upload a square image for your profile photo.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file) {
+                    avatarMutation.mutate(file)
+                  }
+                }}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={avatarMutation.isPending || deleteAvatarMutation.isPending}
+              >
+                Upload Avatar
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => deleteAvatarMutation.mutate()}
+                disabled={!currentUser?.avatar_url || avatarMutation.isPending || deleteAvatarMutation.isPending}
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

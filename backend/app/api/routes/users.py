@@ -1,7 +1,8 @@
 import uuid
+from os.path import splitext
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlmodel import col, delete, func, select
 
 from app import crud
@@ -11,6 +12,12 @@ from app.api.deps import (
     get_current_active_superuser,
 )
 from app.core.config import settings
+from app.core.storage import (
+    StorageError,
+    create_avatar_key,
+    delete_object,
+    upload_object,
+)
 from app.core.security import get_password_hash, verify_password
 from app.models import (
     Item,
@@ -54,7 +61,9 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
 @router.post(
     "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
 )
-def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
+def create_user(
+    *, session: SessionDep, user_in: UserCreate, current_user: CurrentUser
+) -> Any:
     """
     Create new user.
     """
@@ -66,6 +75,13 @@ def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
         )
 
     user = crud.create_user(session=session, user_create=user_in)
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="created",
+        entity_type="User",
+        entity_id=str(user.id),
+    )
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
             email_to=user_in.email, username=user_in.email, password=user_in.password
@@ -93,11 +109,104 @@ def update_user_me(
                 status_code=409, detail="User with this email already exists"
             )
     user_data = user_in.model_dump(exclude_unset=True)
+    before_data = current_user.model_dump()
     current_user.sqlmodel_update(user_data)
     session.add(current_user)
     session.commit()
     session.refresh(current_user)
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="updated",
+        entity_type="User",
+        entity_id=str(current_user.id),
+        before_data=before_data,
+        after_data=current_user.model_dump(),
+    )
     return current_user
+
+
+@router.post("/me/avatar", response_model=UserPublic)
+async def update_user_avatar_me(
+    *,
+    session: SessionDep,
+    current_user: CurrentUser,
+    file: UploadFile = File(...),
+) -> Any:
+    """
+    Upload or replace the current user's avatar.
+    """
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Avatar must be an image file")
+
+    content = await file.read()
+    if len(content) > settings.AVATAR_UPLOAD_MAX_BYTES:
+        raise HTTPException(status_code=413, detail="Avatar file is too large")
+
+    suffix = splitext(file.filename or "")[1] or ".jpg"
+    avatar_key = create_avatar_key(user_id=str(current_user.id), suffix=suffix)
+
+    try:
+        upload_object(
+            key=avatar_key,
+            content=content,
+            content_type=file.content_type or "application/octet-stream",
+        )
+    except StorageError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    previous_key = current_user.avatar_key
+    current_user.avatar_key = avatar_key
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="updated",
+        entity_type="User",
+        entity_id=str(current_user.id),
+        before_data={"avatar_key": previous_key},
+        after_data={"avatar_key": avatar_key},
+    )
+
+    if previous_key and previous_key != avatar_key:
+        try:
+            delete_object(key=previous_key)
+        except StorageError:
+            pass
+
+    return current_user
+
+
+@router.delete("/me/avatar", response_model=Message)
+def delete_user_avatar_me(
+    *, session: SessionDep, current_user: CurrentUser
+) -> Message:
+    """
+    Remove the current user's avatar.
+    """
+    previous_key = current_user.avatar_key
+    current_user.avatar_key = None
+    session.add(current_user)
+    session.commit()
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="updated",
+        entity_type="User",
+        entity_id=str(current_user.id),
+        before_data={"avatar_key": previous_key},
+        after_data={"avatar_key": None},
+    )
+
+    if previous_key:
+        try:
+            delete_object(key=previous_key)
+        except StorageError:
+            pass
+
+    return Message(message="Avatar removed successfully")
 
 
 @router.patch("/me/password", response_model=Message)
@@ -118,6 +227,15 @@ def update_password_me(
     current_user.hashed_password = hashed_password
     session.add(current_user)
     session.commit()
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="updated",
+        entity_type="User",
+        entity_id=str(current_user.id),
+        before_data={"password_changed": True},
+        after_data={"password_changed": True},
+    )
     return Message(message="Password updated successfully")
 
 
@@ -138,8 +256,31 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
         raise HTTPException(
             status_code=403, detail="Super users are not allowed to delete themselves"
         )
+    actor_id = current_user.id
+    actor_email = current_user.email
+    actor_role = getattr(current_user.role, "value", current_user.role)
+    actor_label = (
+        "Admin"
+        if str(actor_role) == "admin"
+        else "Manager"
+        if str(actor_role) == "manager"
+        else "Employee"
+    )
+    before_data = current_user.model_dump()
     session.delete(current_user)
     session.commit()
+    crud.create_audit_log(
+        session=session,
+        current_user=None,
+        actor_id=actor_id,
+        actor_email=actor_email,
+        actor_role=str(actor_role),
+        actor_label=actor_label,
+        action="deleted",
+        entity_type="User",
+        entity_id=str(actor_id),
+        before_data=before_data,
+    )
     return Message(message="User deleted successfully")
 
 
@@ -156,6 +297,14 @@ def register_user(session: SessionDep, user_in: UserRegister) -> Any:
         )
     user_create = UserCreate.model_validate(user_in)
     user = crud.create_user(session=session, user_create=user_create)
+    crud.create_audit_log(
+        session=session,
+        current_user=None,
+        action="created",
+        entity_type="User",
+        entity_id=str(user.id),
+        detail="System created User",
+    )
     return user
 
 
@@ -189,6 +338,7 @@ def update_user(
     session: SessionDep,
     user_id: uuid.UUID,
     user_in: UserUpdate,
+    current_user: CurrentUser,
 ) -> Any:
     """
     Update a user.
@@ -207,7 +357,17 @@ def update_user(
                 status_code=409, detail="User with this email already exists"
             )
 
+    before_data = db_user.model_dump()
     db_user = crud.update_user(session=session, db_user=db_user, user_in=user_in)
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="updated",
+        entity_type="User",
+        entity_id=str(db_user.id),
+        before_data=before_data,
+        after_data=db_user.model_dump(),
+    )
     return db_user
 
 
@@ -225,8 +385,31 @@ def delete_user(
         raise HTTPException(
             status_code=403, detail="Super users are not allowed to delete themselves"
         )
+    actor_id = current_user.id
+    actor_email = current_user.email
+    actor_role = getattr(current_user.role, "value", current_user.role)
+    actor_label = (
+        "Admin"
+        if str(actor_role) == "admin"
+        else "Manager"
+        if str(actor_role) == "manager"
+        else "Employee"
+    )
+    before_data = user.model_dump()
     statement = delete(Item).where(col(Item.owner_id) == user_id)
     session.exec(statement)
     session.delete(user)
     session.commit()
+    crud.create_audit_log(
+        session=session,
+        current_user=None,
+        actor_id=actor_id,
+        actor_email=actor_email,
+        actor_role=str(actor_role),
+        actor_label=actor_label,
+        action="deleted",
+        entity_type="User",
+        entity_id=str(user_id),
+        before_data=before_data,
+    )
     return Message(message="User deleted successfully")

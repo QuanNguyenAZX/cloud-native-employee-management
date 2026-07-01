@@ -5,6 +5,19 @@ services:
   # http://dashboard.localhost.tiangolo.com: frontend
   # etc. To enable it, update .env, set:
   # DOMAIN=localhost.tiangolo.com
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    restart: "no"
+
   proxy:
     image: traefik:3.6
     volumes:
@@ -86,6 +99,12 @@ services:
       SMTP_PORT: "1025"
       SMTP_TLS: "false"
       EMAILS_FROM_EMAIL: "noreply@example.com"
+      OBJECT_STORAGE_ENDPOINT: "http://minio:9000"
+      OBJECT_STORAGE_BUCKET: "avatars"
+      OBJECT_STORAGE_ACCESS_KEY: "minioadmin"
+      OBJECT_STORAGE_SECRET_KEY: "minioadmin"
+      OBJECT_STORAGE_REGION: "us-east-1"
+      OBJECT_STORAGE_FORCE_PATH_STYLE: "true"
 
   mailcatcher:
     image: schickling/mailcatcher
@@ -128,6 +147,9 @@ services:
       - ./frontend/test-results:/app/frontend/test-results
     ports:
       - 9323:9323
+
+volumes:
+  minio-data:
 
 networks:
   traefik-public:

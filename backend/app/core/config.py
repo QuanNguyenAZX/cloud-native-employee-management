@@ -34,8 +34,17 @@ class Settings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    AVATAR_URL_EXPIRE_SECONDS: int = 60 * 60 * 24 * 7
+    AVATAR_UPLOAD_MAX_BYTES: int = 5 * 1024 * 1024
     FRONTEND_HOST: str = "http://localhost:5173"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    OBJECT_STORAGE_BUCKET: str | None = None
+    OBJECT_STORAGE_ENDPOINT: str | None = None
+    OBJECT_STORAGE_ACCESS_KEY: str | None = None
+    OBJECT_STORAGE_SECRET_KEY: str | None = None
+    OBJECT_STORAGE_REGION: str = "us-east-1"
+    OBJECT_STORAGE_FORCE_PATH_STYLE: bool = True
 
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from uuid import uuid4
 from typing import Any
 
 import jwt
@@ -19,11 +20,35 @@ password_hash = PasswordHash(
 ALGORITHM = "HS256"
 
 
-def create_access_token(subject: str | Any, expires_delta: timedelta) -> str:
+def create_token(
+    subject: str | Any,
+    expires_delta: timedelta,
+    *,
+    token_type: str,
+    jti: str | None = None,
+) -> str:
     expire = datetime.now(timezone.utc) + expires_delta
-    to_encode = {"exp": expire, "sub": str(subject)}
+    to_encode: dict[str, Any] = {
+        "exp": expire,
+        "sub": str(subject),
+        "token_type": token_type,
+    }
+    if jti is not None:
+        to_encode["jti"] = jti
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def create_access_token(subject: str | Any, expires_delta: timedelta) -> str:
+    return create_token(subject, expires_delta, token_type="access")
+
+
+def create_refresh_token(subject: str | Any, expires_delta: timedelta) -> tuple[str, str]:
+    jti = str(uuid4())
+    refresh_token = create_token(
+        subject, expires_delta, token_type="refresh", jti=jti
+    )
+    return refresh_token, jti
 
 
 def verify_password(

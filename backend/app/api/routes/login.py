@@ -1,15 +1,29 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
+import jwt
+from jwt.exceptions import InvalidTokenError
+from pydantic import ValidationError
+from sqlmodel import Session
 
 from app import crud
 from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
 from app.core import security
 from app.core.config import settings
-from app.models import Message, NewPassword, Token, UserPublic, UserUpdate
+from app.models import (
+    Message,
+    NewPassword,
+    RefreshToken,
+    RefreshTokenRequest,
+    Token,
+    TokenPayload,
+    User,
+    UserPublic,
+    UserUpdate,
+)
 from app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -18,6 +32,69 @@ from app.utils import (
 )
 
 router = APIRouter(tags=["login"])
+
+
+def _build_access_token_response(*, user: User, refresh_token: str | None = None) -> Token:
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = security.create_access_token(
+        user.id, expires_delta=access_token_expires
+    )
+    return Token(access_token=access_token, refresh_token=refresh_token)
+
+
+def _build_login_token_response(*, session: Session, user: User) -> Token:
+    refresh_token_expires = timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    refresh_token, jti = security.create_refresh_token(
+        user.id, expires_delta=refresh_token_expires
+    )
+    crud.create_refresh_token(
+        session=session,
+        user_id=user.id,
+        jti=jti,
+        expires_at=datetime.now(timezone.utc) + refresh_token_expires,
+    )
+    return _build_access_token_response(user=user, refresh_token=refresh_token)
+
+
+def _decode_refresh_token(refresh_token: str) -> TokenPayload:
+    try:
+        payload = jwt.decode(
+            refresh_token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+        )
+        token_data = TokenPayload(**payload)
+    except (InvalidTokenError, ValidationError):
+        raise HTTPException(
+            status_code=403,
+            detail="Could not validate credentials",
+        )
+    if token_data.token_type != "refresh" or not token_data.sub or not token_data.jti:
+        raise HTTPException(
+            status_code=403,
+            detail="Could not validate credentials",
+        )
+    return token_data
+
+
+def _get_active_user_from_refresh_token(
+    *, session: SessionDep, refresh_token: str
+) -> tuple[User, RefreshToken]:
+    token_data = _decode_refresh_token(refresh_token)
+    db_refresh_token = crud.get_refresh_token_by_jti(session=session, jti=token_data.jti)
+    if (
+        not db_refresh_token
+        or db_refresh_token.revoked_at is not None
+        or db_refresh_token.expires_at < datetime.now(timezone.utc)
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="Could not validate credentials",
+        )
+    user = session.get(User, token_data.sub)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if not user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return user, db_refresh_token
 
 
 @router.post("/login/access-token")
@@ -34,12 +111,32 @@ def login_access_token(
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return Token(
-        access_token=security.create_access_token(
-            user.id, expires_delta=access_token_expires
-        )
+    return _build_login_token_response(session=session, user=user)
+
+
+@router.post("/login/refresh-token", response_model=Token)
+def refresh_access_token(
+    session: SessionDep, body: RefreshTokenRequest
+) -> Token:
+    """
+    Refresh access token using a refresh token.
+    """
+    user, _ = _get_active_user_from_refresh_token(
+        session=session, refresh_token=body.refresh_token
     )
+    return _build_access_token_response(user=user, refresh_token=body.refresh_token)
+
+
+@router.post("/login/logout", response_model=Message)
+def logout(session: SessionDep, body: RefreshTokenRequest) -> Message:
+    """
+    Revoke a refresh token.
+    """
+    _user, db_refresh_token = _get_active_user_from_refresh_token(
+        session=session, refresh_token=body.refresh_token
+    )
+    crud.revoke_refresh_token(session=session, db_refresh_token=db_refresh_token)
+    return Message(message="Logged out successfully")
 
 
 @router.post("/login/test-token", response_model=UserPublic)

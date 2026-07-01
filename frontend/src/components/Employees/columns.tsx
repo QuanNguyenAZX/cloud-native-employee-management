@@ -44,6 +44,34 @@ export const columns = (
     ),
   },
   {
+    accessorKey: "salary",
+    header: "Salary",
+    cell: ({ row }) =>
+      row.original.salary === null || row.original.salary === undefined ? (
+        <span className="text-muted-foreground">-</span>
+      ) : (
+        <span className="font-medium">
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            maximumFractionDigits: 0,
+          }).format(row.original.salary)}
+        </span>
+      ),
+  },
+  {
+    accessorKey: "birth_date",
+    header: "Birth Date",
+    cell: ({ row }) =>
+      row.original.birth_date ? (
+        <span className="text-muted-foreground">
+          {new Date(row.original.birth_date).toLocaleDateString("en-US")}
+        </span>
+      ) : (
+        <span className="text-muted-foreground">-</span>
+      ),
+  },
+  {
     accessorKey: "is_active",
     header: "Status",
     cell: ({ row }) => (
