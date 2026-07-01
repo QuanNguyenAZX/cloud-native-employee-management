@@ -43,6 +43,8 @@ export type EmployeeCreate = {
     job_title: string;
     phone?: (string | null);
     is_active?: boolean;
+    salary?: (number | null);
+    birth_date?: (string | null);
     department_id: string;
 };
 
@@ -52,6 +54,8 @@ export type EmployeePublic = {
     job_title: string;
     phone?: (string | null);
     is_active?: boolean;
+    salary?: (number | null);
+    birth_date?: (string | null);
     id: string;
     department_id: string;
     created_at?: (string | null);
@@ -71,7 +75,38 @@ export type EmployeeUpdate = {
     job_title?: (string | null);
     phone?: (string | null);
     is_active?: (boolean | null);
+    salary?: (number | null);
+    birth_date?: (string | null);
     department_id?: (string | null);
+};
+
+export type DashboardSummary = {
+    total_employees: number;
+    total_departments: number;
+    total_managers: number;
+    average_salary?: (number | null);
+};
+
+export type DashboardDepartmentStat = {
+    department_name: string;
+    count: number;
+};
+
+export type DashboardGrowthStat = {
+    period: string;
+    count: number;
+};
+
+export type DashboardSalaryBandStat = {
+    label: string;
+    count: number;
+};
+
+export type DashboardPublic = {
+    summary: DashboardSummary;
+    employee_by_department: Array<DashboardDepartmentStat>;
+    employee_growth: Array<DashboardGrowthStat>;
+    salary_distribution: Array<DashboardSalaryBandStat>;
 };
 
 export type HTTPValidationError = {
@@ -119,6 +154,7 @@ export type PrivateUserCreate = {
 
 export type Token = {
     access_token: string;
+    refresh_token?: (string | null);
     token_type?: string;
 };
 
@@ -144,6 +180,7 @@ export type UserPublic = {
     full_name?: (string | null);
     id: string;
     created_at?: (string | null);
+    avatar_url?: (string | null);
 };
 
 export type UserRegister = {
@@ -216,6 +253,12 @@ export type DepartmentsDeleteDepartmentResponse = (Message);
 export type EmployeesReadEmployeesData = {
     page?: number;
     size?: number;
+    search?: (string | null);
+    departmentId?: (string | null);
+    role?: (string | null);
+    status?: (boolean | null);
+    sortBy?: ("full_name" | "email" | "job_title" | "salary" | "created_at");
+    sortOrder?: ("asc" | "desc");
 };
 
 export type EmployeesReadEmployeesResponse = (EmployeesPublic);
@@ -283,6 +326,8 @@ export type LoginLoginAccessTokenData = {
 
 export type LoginLoginAccessTokenResponse = (Token);
 
+export type DashboardReadDashboardResponse = (DashboardPublic);
+
 export type LoginTestTokenResponse = (UserPublic);
 
 export type LoginRecoverPasswordData = {
@@ -331,6 +376,16 @@ export type UsersUpdateUserMeData = {
 };
 
 export type UsersUpdateUserMeResponse = (UserPublic);
+
+export type UsersUpdateUserAvatarMeData = {
+    formData: {
+        file: Blob;
+    };
+};
+
+export type UsersUpdateUserAvatarMeResponse = (UserPublic);
+
+export type UsersDeleteUserAvatarMeResponse = (Message);
 
 export type UsersUpdatePasswordMeData = {
     requestBody: UpdatePassword;

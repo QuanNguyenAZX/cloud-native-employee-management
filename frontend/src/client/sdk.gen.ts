@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { DepartmentsReadDepartmentsData, DepartmentsReadDepartmentsResponse, DepartmentsCreateDepartmentData, DepartmentsCreateDepartmentResponse, DepartmentsReadDepartmentData, DepartmentsReadDepartmentResponse, DepartmentsUpdateDepartmentData, DepartmentsUpdateDepartmentResponse, DepartmentsDeleteDepartmentData, DepartmentsDeleteDepartmentResponse, EmployeesReadEmployeesData, EmployeesReadEmployeesResponse, EmployeesCreateEmployeeData, EmployeesCreateEmployeeResponse, EmployeesReadEmployeeData, EmployeesReadEmployeeResponse, EmployeesUpdateEmployeeData, EmployeesUpdateEmployeeResponse, EmployeesDeleteEmployeeData, EmployeesDeleteEmployeeResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { DashboardReadDashboardResponse, DepartmentsReadDepartmentsData, DepartmentsReadDepartmentsResponse, DepartmentsCreateDepartmentData, DepartmentsCreateDepartmentResponse, DepartmentsReadDepartmentData, DepartmentsReadDepartmentResponse, DepartmentsUpdateDepartmentData, DepartmentsUpdateDepartmentResponse, DepartmentsDeleteDepartmentData, DepartmentsDeleteDepartmentResponse, EmployeesReadEmployeesData, EmployeesReadEmployeesResponse, EmployeesCreateEmployeeData, EmployeesCreateEmployeeResponse, EmployeesReadEmployeeData, EmployeesReadEmployeeResponse, EmployeesUpdateEmployeeData, EmployeesUpdateEmployeeResponse, EmployeesDeleteEmployeeData, EmployeesDeleteEmployeeResponse, ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdateUserAvatarMeData, UsersUpdateUserAvatarMeResponse, UsersDeleteUserAvatarMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class DepartmentsService {
     /**
@@ -126,7 +126,13 @@ export class EmployeesService {
             url: '/api/v1/employees/',
             query: {
                 page: data.page,
-                size: data.size
+                size: data.size,
+                search: data.search,
+                department_id: data.departmentId,
+                role: data.role,
+                status: data.status,
+                sort_by: data.sortBy,
+                sort_order: data.sortOrder
             },
             errors: {
                 422: 'Validation Error'
@@ -213,6 +219,20 @@ export class EmployeesService {
             errors: {
                 422: 'Validation Error'
             }
+        });
+    }
+}
+
+export class DashboardService {
+    /**
+     * Read Dashboard
+     * @returns DashboardPublic Successful Response
+     * @throws ApiError
+     */
+    public static readDashboard(): CancelablePromise<DashboardReadDashboardResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/dashboard/'
         });
     }
 }
@@ -534,6 +554,39 @@ export class UsersService {
             errors: {
                 422: 'Validation Error'
             }
+        });
+    }
+
+    /**
+     * Update User Avatar Me
+     * Upload or replace the current user's avatar.
+     * @param data The data for the request.
+     * @param data.formData
+     * @returns UserPublic Successful Response
+     * @throws ApiError
+     */
+    public static updateUserAvatarMe(data: UsersUpdateUserAvatarMeData): CancelablePromise<UsersUpdateUserAvatarMeResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/users/me/avatar',
+            formData: data.formData,
+            mediaType: 'multipart/form-data',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+
+    /**
+     * Delete User Avatar Me
+     * Remove the current user's avatar.
+     * @returns Message Successful Response
+     * @throws ApiError
+     */
+    public static deleteUserAvatarMe(): CancelablePromise<UsersDeleteUserAvatarMeResponse> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/api/v1/users/me/avatar'
         });
     }
     

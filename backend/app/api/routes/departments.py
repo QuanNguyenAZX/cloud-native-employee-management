@@ -7,8 +7,21 @@ from sqlalchemy import asc, desc, or_
 from sqlmodel import col, func, select
 
 from app import crud
-from app.api.deps import SessionDep, get_current_active_superuser, get_current_manager_or_admin
-from app.models import Department, DepartmentCreate, DepartmentPublic, DepartmentsPublic, DepartmentUpdate, Employee, Message
+from app.api.deps import (
+    CurrentUser,
+    SessionDep,
+    get_current_active_superuser,
+    get_current_manager_or_admin,
+)
+from app.models import (
+    Department,
+    DepartmentCreate,
+    DepartmentPublic,
+    DepartmentsPublic,
+    DepartmentUpdate,
+    Employee,
+    Message,
+)
 
 router = APIRouter(prefix="/departments", tags=["departments"])
 
@@ -32,7 +45,11 @@ def _apply_department_filters(
     return statement
 
 
-@router.get("/", response_model=DepartmentsPublic, dependencies=[Depends(get_current_manager_or_admin)])
+@router.get(
+    "/",
+    response_model=DepartmentsPublic,
+    dependencies=[Depends(get_current_manager_or_admin)],
+)
 def read_departments(
     session: SessionDep,
     page: int = 1,
@@ -70,17 +87,41 @@ def read_departments(
     departments = session.exec(statement).all()
     departments_public = [DepartmentPublic.model_validate(item) for item in departments]
     pages = math.ceil(count / size) if count else 1
-    return DepartmentsPublic(data=departments_public, count=count, page=page, size=size, pages=pages)
+    return DepartmentsPublic(
+        data=departments_public,
+        count=count,
+        page=page,
+        size=size,
+        pages=pages,
+    )
 
 
-@router.post("/", response_model=DepartmentPublic, dependencies=[Depends(get_current_active_superuser)])
-def create_department(*, session: SessionDep, department_in: DepartmentCreate) -> Any:
+@router.post(
+    "/",
+    response_model=DepartmentPublic,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+def create_department(
+    *, session: SessionDep, department_in: DepartmentCreate, current_user: CurrentUser
+) -> Any:
     if crud.get_department_by_name(session=session, name=department_in.name):
         raise HTTPException(status_code=400, detail="Department already exists")
-    return crud.create_department(session=session, department_in=department_in)
+    department = crud.create_department(session=session, department_in=department_in)
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="created",
+        entity_type="Department",
+        entity_id=str(department.id),
+    )
+    return department
 
 
-@router.get("/{department_id}", response_model=DepartmentPublic, dependencies=[Depends(get_current_manager_or_admin)])
+@router.get(
+    "/{department_id}",
+    response_model=DepartmentPublic,
+    dependencies=[Depends(get_current_manager_or_admin)],
+)
 def read_department(department_id: uuid.UUID, session: SessionDep) -> Any:
     department = session.get(Department, department_id)
     if not department:
@@ -88,12 +129,17 @@ def read_department(department_id: uuid.UUID, session: SessionDep) -> Any:
     return department
 
 
-@router.put("/{department_id}", response_model=DepartmentPublic, dependencies=[Depends(get_current_active_superuser)])
+@router.put(
+    "/{department_id}",
+    response_model=DepartmentPublic,
+    dependencies=[Depends(get_current_active_superuser)],
+)
 def update_department(
     *,
     session: SessionDep,
     department_id: uuid.UUID,
     department_in: DepartmentUpdate,
+    current_user: CurrentUser,
 ) -> Any:
     department = session.get(Department, department_id)
     if not department:
@@ -104,13 +150,30 @@ def update_department(
         )
         if existing_department and existing_department.id != department_id:
             raise HTTPException(status_code=409, detail="Department already exists")
-    return crud.update_department(
+    before_data = department.model_dump()
+    updated_department = crud.update_department(
         session=session, db_department=department, department_in=department_in
     )
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="updated",
+        entity_type="Department",
+        entity_id=str(updated_department.id),
+        before_data=before_data,
+        after_data=updated_department.model_dump(),
+    )
+    return updated_department
 
 
-@router.delete("/{department_id}", response_model=Message, dependencies=[Depends(get_current_active_superuser)])
-def delete_department(session: SessionDep, department_id: uuid.UUID) -> Message:
+@router.delete(
+    "/{department_id}",
+    response_model=Message,
+    dependencies=[Depends(get_current_active_superuser)],
+)
+def delete_department(
+    session: SessionDep, department_id: uuid.UUID, current_user: CurrentUser
+) -> Message:
     department = session.get(Department, department_id)
     if not department:
         raise HTTPException(status_code=404, detail="Department not found")
@@ -122,6 +185,15 @@ def delete_department(session: SessionDep, department_id: uuid.UUID) -> Message:
             status_code=400,
             detail="Department has employees. Reassign or delete them first.",
         )
+    before_data = department.model_dump()
     session.delete(department)
     session.commit()
+    crud.create_audit_log(
+        session=session,
+        current_user=current_user,
+        action="deleted",
+        entity_type="Department",
+        entity_id=str(department_id),
+        before_data=before_data,
+    )
     return Message(message="Department deleted successfully")

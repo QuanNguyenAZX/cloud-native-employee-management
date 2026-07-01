@@ -1,8 +1,10 @@
 import {
   type ColumnDef,
+  type OnChangeFn,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  type PaginationState,
   useReactTable,
 } from "@tanstack/react-table"
 import {
@@ -32,17 +34,36 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  manualPagination?: boolean
+  pageCount?: number
+  pagination?: PaginationState
+  onPaginationChange?: OnChangeFn<PaginationState>
+  totalRows?: number
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  manualPagination = false,
+  pageCount,
+  pagination,
+  onPaginationChange,
+  totalRows,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    ...(manualPagination
+      ? {
+          manualPagination: true,
+          pageCount: pageCount ?? -1,
+          state: pagination ? { pagination } : undefined,
+          onPaginationChange,
+        }
+      : {
+          getPaginationRowModel: getPaginationRowModel(),
+        }),
   })
 
   return (
@@ -102,10 +123,12 @@ export function DataTable<TData, TValue>({
               {Math.min(
                 (table.getState().pagination.pageIndex + 1) *
                   table.getState().pagination.pageSize,
-                data.length,
+                totalRows ?? data.length,
               )}{" "}
               of{" "}
-              <span className="font-medium text-foreground">{data.length}</span>{" "}
+              <span className="font-medium text-foreground">
+                {totalRows ?? data.length}
+              </span>{" "}
               entries
             </div>
             <div className="flex items-center gap-x-2">
@@ -140,7 +163,7 @@ export function DataTable<TData, TValue>({
               </span>
               <span>of</span>
               <span className="font-medium text-foreground">
-                {table.getPageCount()}
+                {pageCount ?? table.getPageCount()}
               </span>
             </div>
 

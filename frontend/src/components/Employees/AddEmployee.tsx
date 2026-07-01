@@ -44,6 +44,8 @@ const formSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
   job_title: z.string().min(1, { message: "Job title is required" }),
   phone: z.string().optional(),
+  salary: z.string().optional(),
+  birth_date: z.string().optional(),
   department_id: z.string().min(1, { message: "Department is required" }),
   is_active: z.boolean(),
 })
@@ -68,6 +70,8 @@ const AddEmployee = ({ departments }: AddEmployeeProps) => {
       email: "",
       job_title: "",
       phone: "",
+      salary: "",
+      birth_date: "",
       department_id: "",
       is_active: true,
     },
@@ -88,7 +92,17 @@ const AddEmployee = ({ departments }: AddEmployeeProps) => {
   })
 
   const onSubmit = (data: FormData) => {
-    mutation.mutate(data)
+    mutation.mutate({
+      ...data,
+      salary:
+        data.salary && data.salary.trim() !== ""
+          ? Number(data.salary)
+          : null,
+      birth_date:
+        data.birth_date && data.birth_date.trim() !== ""
+          ? data.birth_date
+          : null,
+    })
   }
 
   return (
@@ -161,6 +175,32 @@ const AddEmployee = ({ departments }: AddEmployeeProps) => {
                     <FormLabel>Phone</FormLabel>
                     <FormControl>
                       <Input placeholder="Phone" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="salary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Salary</FormLabel>
+                    <FormControl>
+                      <Input type="number" min="0" step="1" placeholder="Salary" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="birth_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Birth Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

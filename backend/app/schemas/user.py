@@ -52,6 +52,7 @@ class UpdatePassword(SQLModel):
 class UserPublic(UserBase):
     id: uuid.UUID
     created_at: datetime | None = None
+    avatar_url: str | None = None
 
 
 class UsersPublic(SQLModel):

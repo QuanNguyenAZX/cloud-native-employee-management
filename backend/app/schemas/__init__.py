@@ -1,4 +1,12 @@
 from app.schemas.common import Message
+from app.schemas.audit_log import AuditLogPublic, AuditLogsPublic
+from app.schemas.dashboard import (
+    DashboardDepartmentStat,
+    DashboardGrowthStat,
+    DashboardPublic,
+    DashboardSalaryBandStat,
+    DashboardSummary,
+)
 from app.schemas.department import (
     DepartmentBase,
     DepartmentCreate,
@@ -33,6 +41,13 @@ __all__ = [
     "DepartmentPublic",
     "DepartmentsPublic",
     "DepartmentUpdate",
+    "DashboardDepartmentStat",
+    "DashboardGrowthStat",
+    "DashboardPublic",
+    "DashboardSalaryBandStat",
+    "DashboardSummary",
+    "AuditLogPublic",
+    "AuditLogsPublic",
     "EmployeeBase",
     "EmployeeCreate",
     "EmployeePublic",

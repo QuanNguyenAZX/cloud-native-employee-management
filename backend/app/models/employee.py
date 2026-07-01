@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime
@@ -18,6 +18,8 @@ class Employee(SQLModel, table=True):
     job_title: str = Field(min_length=1, max_length=255)
     phone: str | None = Field(default=None, max_length=50)
     is_active: bool = True
+    salary: float | None = Field(default=None)
+    birth_date: date | None = Field(default=None)
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore
