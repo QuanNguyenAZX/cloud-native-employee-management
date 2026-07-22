@@ -267,12 +267,10 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
         else "Employee"
     )
     before_data = current_user.model_dump()
-    session.delete(current_user)
-    session.commit()
     crud.create_audit_log(
         session=session,
         current_user=None,
-        actor_id=actor_id,
+        actor_id=None,
         actor_email=actor_email,
         actor_role=str(actor_role),
         actor_label=actor_label,
@@ -281,6 +279,8 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
         entity_id=str(actor_id),
         before_data=before_data,
     )
+    session.delete(current_user)
+    session.commit()
     return Message(message="User deleted successfully")
 
 

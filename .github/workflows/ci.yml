@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  quality-and-build:
+    runs-on: ubuntu-latest
+
+    env:
+      PYTHONUNBUFFERED: "1"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.bun
+            .venv
+            frontend/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('pyproject.toml','uv.lock','backend/pyproject.toml','frontend/package.json','frontend/bun.lock','package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install backend dependencies
+        run: uv sync --frozen --all-groups
+
+      - name: Lint backend
+        run: uv run --package app ruff check app
+
+      - name: Run backend tests
+        run: uv run --package app pytest
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint frontend
+        run: bun run lint
+
+      - name: Build frontend
+        run: bun run build
+
+      - name: Build backend Docker image
+        run: docker build -t full-stack-fastapi-backend:ci -f backend/Dockerfile .
+
+      - name: Build frontend Docker image
+        run: docker build -t full-stack-fastapi-frontend:ci -f frontend/Dockerfile .
