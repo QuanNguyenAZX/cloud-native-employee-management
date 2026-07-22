@@ -45,10 +45,12 @@ jobs:
         run: uv sync --frozen --all-groups
 
       - name: Lint backend
-        run: uv run --package app ruff check app
+        working-directory: backend
+        run: uv run ruff check app
 
       - name: Run backend tests
-        run: uv run --package app pytest
+        working-directory: backend
+        run: uv run pytest
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
