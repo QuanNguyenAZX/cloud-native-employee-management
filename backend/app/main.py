@@ -1,10 +1,10 @@
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.routing import APIRoute
 from fastapi.responses import JSONResponse
-from starlette.middleware.cors import CORSMiddleware
+from fastapi.routing import APIRoute
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware.cors import CORSMiddleware
 
 from app.api.main import api_router
 from app.core.config import settings
@@ -38,6 +38,7 @@ async def validation_exception_handler(_, exc: RequestValidationError):
         status_code=422,
         content={"detail": exc.errors()},
     )
+
 
 # Set all CORS enabled origins
 if settings.all_cors_origins:

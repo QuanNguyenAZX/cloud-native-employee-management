@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, JSON
+from sqlalchemy import JSON, DateTime
 from sqlmodel import Field, SQLModel
 
 from app.models.utils import get_datetime_utc

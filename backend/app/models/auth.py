@@ -21,6 +21,4 @@ class RefreshToken(SQLModel, table=True):
         sa_type=DateTime(timezone=True),  # type: ignore
     )
     expires_at: datetime = Field(sa_type=DateTime(timezone=True))
-    revoked_at: datetime | None = Field(
-        default=None, sa_type=DateTime(timezone=True)
-    )
+    revoked_at: datetime | None = Field(default=None, sa_type=DateTime(timezone=True))

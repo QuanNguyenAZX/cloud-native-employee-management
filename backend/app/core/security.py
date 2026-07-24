@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
-from uuid import uuid4
 from typing import Any
+from uuid import uuid4
 
 import jwt
 from pwdlib import PasswordHash
@@ -43,11 +43,11 @@ def create_access_token(subject: str | Any, expires_delta: timedelta) -> str:
     return create_token(subject, expires_delta, token_type="access")
 
 
-def create_refresh_token(subject: str | Any, expires_delta: timedelta) -> tuple[str, str]:
+def create_refresh_token(
+    subject: str | Any, expires_delta: timedelta
+) -> tuple[str, str]:
     jti = str(uuid4())
-    refresh_token = create_token(
-        subject, expires_delta, token_type="refresh", jti=jti
-    )
+    refresh_token = create_token(subject, expires_delta, token_type="refresh", jti=jti)
     return refresh_token, jti
 
 

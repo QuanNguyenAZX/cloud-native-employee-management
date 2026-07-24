@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
+import jwt
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
-import jwt
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
@@ -34,7 +34,9 @@ from app.utils import (
 router = APIRouter(tags=["login"])
 
 
-def _build_access_token_response(*, user: User, refresh_token: str | None = None) -> Token:
+def _build_access_token_response(
+    *, user: User, refresh_token: str | None = None
+) -> Token:
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         user.id, expires_delta=access_token_expires
@@ -79,7 +81,9 @@ def _get_active_user_from_refresh_token(
     *, session: SessionDep, refresh_token: str
 ) -> tuple[User, RefreshToken]:
     token_data = _decode_refresh_token(refresh_token)
-    db_refresh_token = crud.get_refresh_token_by_jti(session=session, jti=token_data.jti)
+    db_refresh_token = crud.get_refresh_token_by_jti(
+        session=session, jti=token_data.jti
+    )
     if (
         not db_refresh_token
         or db_refresh_token.revoked_at is not None
@@ -115,9 +119,7 @@ def login_access_token(
 
 
 @router.post("/login/refresh-token", response_model=Token)
-def refresh_access_token(
-    session: SessionDep, body: RefreshTokenRequest
-) -> Token:
+def refresh_access_token(session: SessionDep, body: RefreshTokenRequest) -> Token:
     """
     Refresh access token using a refresh token.
     """
