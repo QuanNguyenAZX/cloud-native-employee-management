@@ -12,13 +12,13 @@ from app.api.deps import (
     get_current_active_superuser,
 )
 from app.core.config import settings
+from app.core.security import get_password_hash, verify_password
 from app.core.storage import (
     StorageError,
     create_avatar_key,
     delete_object,
     upload_object,
 )
-from app.core.security import get_password_hash, verify_password
 from app.models import (
     Item,
     Message,
@@ -180,9 +180,7 @@ async def update_user_avatar_me(
 
 
 @router.delete("/me/avatar", response_model=Message)
-def delete_user_avatar_me(
-    *, session: SessionDep, current_user: CurrentUser
-) -> Message:
+def delete_user_avatar_me(*, session: SessionDep, current_user: CurrentUser) -> Message:
     """
     Remove the current user's avatar.
     """
@@ -267,12 +265,10 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
         else "Employee"
     )
     before_data = current_user.model_dump()
-    session.delete(current_user)
-    session.commit()
     crud.create_audit_log(
         session=session,
         current_user=None,
-        actor_id=actor_id,
+        actor_id=None,
         actor_email=actor_email,
         actor_role=str(actor_role),
         actor_label=actor_label,
@@ -281,6 +277,8 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
         entity_id=str(actor_id),
         before_data=before_data,
     )
+    session.delete(current_user)
+    session.commit()
     return Message(message="User deleted successfully")
 
 

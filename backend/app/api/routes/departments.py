@@ -4,7 +4,7 @@ from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import asc, desc, or_
-from sqlmodel import col, func, select
+from sqlmodel import func, select
 
 from app import crud
 from app.api.deps import (
@@ -178,7 +178,9 @@ def delete_department(
     if not department:
         raise HTTPException(status_code=404, detail="Department not found")
     employee_count = session.exec(
-        select(func.count()).select_from(Employee).where(Employee.department_id == department_id)
+        select(func.count())
+        .select_from(Employee)
+        .where(Employee.department_id == department_id)
     ).one()
     if employee_count:
         raise HTTPException(

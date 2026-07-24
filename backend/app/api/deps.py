@@ -71,7 +71,11 @@ def get_current_manager_or_admin(current_user: CurrentUser) -> User:
 
 
 def get_current_employee_or_higher(current_user: CurrentUser) -> User:
-    if current_user.is_superuser or current_user.role in {"admin", "manager", "employee"}:
+    if current_user.is_superuser or current_user.role in {
+        "admin",
+        "manager",
+        "employee",
+    }:
         return current_user
     raise HTTPException(
         status_code=403, detail="The user doesn't have enough privileges"

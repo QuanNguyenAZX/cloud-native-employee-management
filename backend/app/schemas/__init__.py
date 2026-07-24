@@ -1,5 +1,5 @@
-from app.schemas.common import Message
 from app.schemas.audit_log import AuditLogPublic, AuditLogsPublic
+from app.schemas.common import Message
 from app.schemas.dashboard import (
     DashboardDepartmentStat,
     DashboardGrowthStat,
