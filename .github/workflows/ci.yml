@@ -76,6 +76,10 @@ jobs:
         working-directory: backend
         run: uv run ruff check app
 
+      - name: Run backend migrations
+        working-directory: backend
+        run: uv run alembic upgrade head
+
       - name: Run backend tests
         working-directory: backend
         run: uv run pytest
