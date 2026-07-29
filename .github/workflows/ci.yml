@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - feature/github-actions
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    env:
+      PROJECT_NAME: Cloud Native Employee Management
+      ENVIRONMENT: local
+      FRONTEND_HOST: http://localhost:5173
+      BACKEND_CORS_ORIGINS: http://localhost:5173
+      SECRET_KEY: ci-secret-key-not-for-production
+      FIRST_SUPERUSER: admin@example.com
+      FIRST_SUPERUSER_PASSWORD: SuperSecurePassword123!
+      POSTGRES_SERVER: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app
+      VITE_API_URL: http://localhost:8000
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d app"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+
+      - name: Install uv
+        run: python -m pip install --upgrade pip uv
+
+      - name: Sync backend dependencies
+        run: uv sync --frozen --all-groups --all-packages
+
+      - name: Add uv environment to PATH
+        run: echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint backend
+        working-directory: backend
+        run: bash scripts/lint.sh
+
+      - name: Prepare backend database
+        working-directory: backend
+        run: bash scripts/prestart.sh
+
+      - name: Run backend tests
+        working-directory: backend
+        run: bash scripts/test.sh
+
+      - name: Lint frontend
+        working-directory: frontend
+        run: bunx biome check --no-errors-on-unmatched --files-ignore-unknown=true ./
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: false
+          tags: ci/backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build frontend Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: frontend/Dockerfile
+          push: false
+          tags: ci/frontend:latest
+          build-args: |
+            VITE_API_URL=http://localhost:8000
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
