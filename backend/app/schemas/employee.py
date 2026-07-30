@@ -32,7 +32,7 @@ class EmployeeCreate(EmployeeBase):
 
 class EmployeeUpdate(SQLModel):
     full_name: str | None = Field(default=None, min_length=1, max_length=255)
-    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore[assignment]
+    email: EmailStr | None = Field(default=None, max_length=255)
     job_title: str | None = Field(default=None, min_length=1, max_length=255)
     phone: str | None = Field(default=None, max_length=50)
     is_active: bool | None = None

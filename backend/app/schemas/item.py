@@ -14,7 +14,7 @@ class ItemCreate(ItemBase):
 
 
 class ItemUpdate(ItemBase):
-    title: str | None = Field(default=None, min_length=1, max_length=255)  # type: ignore[assignment]
+    title: str | None = Field(default=None, min_length=1, max_length=255)
 
 
 class ItemPublic(ItemBase):
