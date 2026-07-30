@@ -3,7 +3,6 @@ from enum import Enum
 import uuid
 
 from pydantic import EmailStr
-from sqlalchemy import String
 from sqlmodel import Field, SQLModel
 
 
@@ -17,10 +16,7 @@ class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     is_active: bool = True
     is_superuser: bool = False
-    role: UserRole = Field(
-        default=UserRole.employee,
-        sa_type=String(length=20),
-    )
+    role: UserRole = Field(default=UserRole.employee)
     full_name: str | None = Field(default=None, max_length=255)
 
 
