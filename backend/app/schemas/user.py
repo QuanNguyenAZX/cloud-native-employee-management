@@ -31,9 +31,13 @@ class UserRegister(SQLModel):
     full_name: str | None = Field(default=None, max_length=255)
 
 
-class UserUpdate(UserBase):
+class UserUpdate(SQLModel):
     email: Annotated[EmailStr | None, Field(max_length=255)] = None
     password: Annotated[str | None, Field(min_length=8, max_length=128)] = None
+    is_active: bool | None = None
+    is_superuser: bool | None = None
+    role: UserRole | None = None
+    full_name: Annotated[str | None, Field(max_length=255)] = None
 
 
 class UserUpdateMe(SQLModel):
