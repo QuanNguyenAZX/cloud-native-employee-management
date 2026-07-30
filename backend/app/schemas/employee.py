@@ -1,5 +1,6 @@
 import uuid
 from datetime import date, datetime
+from typing import Annotated
 
 from pydantic import EmailStr, field_validator
 from sqlmodel import Field, SQLModel
@@ -31,12 +32,12 @@ class EmployeeCreate(EmployeeBase):
 
 
 class EmployeeUpdate(SQLModel):
-    full_name: str | None = Field(default=None, min_length=1, max_length=255)
-    email: EmailStr | None = Field(default=None, max_length=255)
-    job_title: str | None = Field(default=None, min_length=1, max_length=255)
-    phone: str | None = Field(default=None, max_length=50)
+    full_name: Annotated[str | None, Field(min_length=1, max_length=255)] = None
+    email: Annotated[EmailStr | None, Field(max_length=255)] = None
+    job_title: Annotated[str | None, Field(min_length=1, max_length=255)] = None
+    phone: Annotated[str | None, Field(max_length=50)] = None
     is_active: bool | None = None
-    salary: float | None = Field(default=None, ge=0)
+    salary: Annotated[float | None, Field(ge=0)] = None
     birth_date: date | None = None
     department_id: uuid.UUID | None = None
 

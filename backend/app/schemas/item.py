@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Annotated
 
 from sqlmodel import Field, SQLModel
 
@@ -14,7 +15,7 @@ class ItemCreate(ItemBase):
 
 
 class ItemUpdate(ItemBase):
-    title: str | None = Field(default=None, min_length=1, max_length=255)
+    title: Annotated[str | None, Field(min_length=1, max_length=255)] = None
 
 
 class ItemPublic(ItemBase):

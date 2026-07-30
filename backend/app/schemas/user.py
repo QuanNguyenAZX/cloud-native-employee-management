@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import Annotated
 import uuid
 
 from pydantic import EmailStr
@@ -31,8 +32,8 @@ class UserRegister(SQLModel):
 
 
 class UserUpdate(UserBase):
-    email: EmailStr | None = Field(default=None, max_length=255)
-    password: str | None = Field(default=None, min_length=8, max_length=128)
+    email: Annotated[EmailStr | None, Field(max_length=255)] = None
+    password: Annotated[str | None, Field(min_length=8, max_length=128)] = None
 
 
 class UserUpdateMe(SQLModel):
