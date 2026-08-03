@@ -1,3 +1,4 @@
+import uuid
 from collections.abc import Generator
 from typing import Annotated
 
@@ -38,12 +39,13 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    if token_data.token_type not in {None, "access"}:
+    sub = token_data.sub
+    if token_data.token_type not in {None, "access"} or sub is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = session.get(User, token_data.sub)
+    user = session.get(User, uuid.UUID(sub))
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if not user.is_active:

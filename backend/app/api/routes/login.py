@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
@@ -79,7 +80,14 @@ def _get_active_user_from_refresh_token(
     *, session: SessionDep, refresh_token: str
 ) -> tuple[User, RefreshToken]:
     token_data = _decode_refresh_token(refresh_token)
-    db_refresh_token = crud.get_refresh_token_by_jti(session=session, jti=token_data.jti)
+    jti = token_data.jti
+    sub = token_data.sub
+    if jti is None or sub is None:
+        raise HTTPException(
+            status_code=403,
+            detail="Could not validate credentials",
+        )
+    db_refresh_token = crud.get_refresh_token_by_jti(session=session, jti=jti)
     if (
         not db_refresh_token
         or db_refresh_token.revoked_at is not None
@@ -89,7 +97,7 @@ def _get_active_user_from_refresh_token(
             status_code=403,
             detail="Could not validate credentials",
         )
-    user = session.get(User, token_data.sub)
+    user = session.get(User, uuid.UUID(sub))
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if not user.is_active:
