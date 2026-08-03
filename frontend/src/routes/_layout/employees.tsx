@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
-import { type PaginationState } from "@tanstack/react-table"
+import type { PaginationState } from "@tanstack/react-table"
 import { Search, X } from "lucide-react"
 import { Suspense } from "react"
 import { z } from "zod"

@@ -7,7 +7,7 @@ import {
   Users,
   UserRound,
 } from "lucide-react"
-import { type ReactNode } from "react"
+import type { ReactNode } from "react"
 
 import { DashboardService } from "@/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
