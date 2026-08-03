@@ -8,8 +8,8 @@ from sqlmodel import col, delete, func, select
 from app import crud
 from app.api.deps import (
     CurrentUser,
-    get_current_active_superuser,
     SessionDep,
+    get_current_active_superuser,
 )
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
