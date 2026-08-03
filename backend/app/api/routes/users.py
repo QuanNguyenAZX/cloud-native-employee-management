@@ -14,9 +14,9 @@ from app.api.deps import (
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.core.storage import (
+    StorageError,
     create_avatar_key,
     delete_object,
-    StorageError,
     upload_object,
 )
 from app.models import (
