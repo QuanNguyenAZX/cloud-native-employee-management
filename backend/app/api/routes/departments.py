@@ -1,10 +1,10 @@
 import math
 import uuid
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import asc, desc, or_
-from sqlmodel import col, func, select
+from sqlmodel import func, select
 
 from app import crud
 from app.api.deps import (
@@ -32,16 +32,14 @@ def _apply_department_filters(
     search: str | None,
     is_active: bool | None,
 ) -> Any:
+    name = cast(Any, Department.name)
+    description = cast(Any, Department.description)
+    is_active_col = cast(Any, Department.is_active)
     if search:
         pattern = f"%{search.strip()}%"
-        statement = statement.where(
-            or_(
-                Department.name.ilike(pattern),
-                Department.description.ilike(pattern),
-            )
-        )
+        statement = statement.where(or_(name.ilike(pattern), description.ilike(pattern)))
     if is_active is not None:
-        statement = statement.where(Department.is_active == is_active)
+        statement = statement.where(is_active_col == is_active)
     return statement
 
 
@@ -62,8 +60,8 @@ def read_departments(
     page = max(page, 1)
     size = min(max(size, 1), 100)
     sort_map = {
-        "name": Department.name,
-        "created_at": Department.created_at,
+        "name": cast(Any, Department.name),
+        "created_at": cast(Any, Department.created_at),
     }
     sort_column = sort_map[sort_by]
     sort_fn = asc if sort_order == "asc" else desc
@@ -178,7 +176,9 @@ def delete_department(
     if not department:
         raise HTTPException(status_code=404, detail="Department not found")
     employee_count = session.exec(
-        select(func.count()).select_from(Employee).where(Employee.department_id == department_id)
+        select(func.count())
+        .select_from(Employee)
+        .where(cast(Any, Employee.department_id) == department_id)
     ).one()
     if employee_count:
         raise HTTPException(

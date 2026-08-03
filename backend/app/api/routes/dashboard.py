@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import date
-from typing import Any
+from typing import Any, cast
 
 from fastapi import APIRouter
 from sqlmodel import select, func
@@ -26,19 +26,25 @@ def _month_key(value: date) -> str:
 def read_dashboard(session: SessionDep, _current_user: CurrentUser) -> Any:
     total_employees = session.exec(select(func.count()).select_from(Employee)).one()
     total_departments = session.exec(select(func.count()).select_from(Department)).one()
+    employee_id = cast(Any, Employee.id)
+    employee_salary = cast(Any, Employee.salary)
+    employee_created_at = cast(Any, Employee.created_at)
+    department_id = cast(Any, Department.id)
+    department_name = cast(Any, Department.name)
+    user_role = cast(Any, User.role)
     total_managers = session.exec(
-        select(func.count()).select_from(User).where(User.role == UserRole.manager)
+        select(func.count()).select_from(User).where(user_role == UserRole.manager)
     ).one()
     average_salary = session.exec(
-        select(func.avg(Employee.salary)).where(Employee.salary.is_not(None))
+        select(func.avg(employee_salary)).where(employee_salary.is_not(None))
     ).one()
 
     department_rows = session.exec(
-        select(Department.name, func.count(Employee.id))
+        select(department_name, func.count(employee_id))
         .select_from(Department)
-        .outerjoin(Employee, Employee.department_id == Department.id)
-        .group_by(Department.id, Department.name)
-        .order_by(Department.name.asc())
+        .outerjoin(Employee, cast(Any, Employee.department_id) == department_id)
+        .group_by(department_id, department_name)
+        .order_by(department_name.asc())
     ).all()
     employee_by_department = [
         DashboardDepartmentStat(department_name=name, count=count or 0)
@@ -46,7 +52,7 @@ def read_dashboard(session: SessionDep, _current_user: CurrentUser) -> Any:
     ]
 
     growth_counter: dict[str, int] = defaultdict(int)
-    employees = session.exec(select(Employee.created_at, Employee.salary)).all()
+    employees = session.exec(select(employee_created_at, employee_salary)).all()
     for created_at, _salary in employees:
         if not created_at:
             continue

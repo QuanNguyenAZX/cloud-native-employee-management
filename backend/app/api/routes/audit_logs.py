@@ -1,5 +1,5 @@
 import math
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import asc, desc, or_
@@ -29,6 +29,13 @@ def read_audit_logs(
     page = max(page, 1)
     size = min(max(size, 1), 100)
     sort_fn = asc if sort_order == "asc" else desc
+    detail = cast(Any, AuditLog.detail)
+    actor_email = cast(Any, AuditLog.actor_email)
+    actor_role = cast(Any, AuditLog.actor_role)
+    entity_type_col = cast(Any, AuditLog.entity_type)
+    entity_id = cast(Any, AuditLog.entity_id)
+    action_col = cast(Any, AuditLog.action)
+    created_at = cast(Any, AuditLog.created_at)
 
     statement = select(AuditLog)
     count_statement = select(func.count()).select_from(AuditLog)
@@ -36,30 +43,27 @@ def read_audit_logs(
     if search:
         pattern = f"%{search.strip()}%"
         search_filter = or_(
-            AuditLog.detail.ilike(pattern),
-            AuditLog.actor_email.ilike(pattern),
-            AuditLog.actor_role.ilike(pattern),
-            AuditLog.entity_type.ilike(pattern),
-            AuditLog.entity_id.ilike(pattern),
+            detail.ilike(pattern),
+            actor_email.ilike(pattern),
+            actor_role.ilike(pattern),
+            entity_type_col.ilike(pattern),
+            entity_id.ilike(pattern),
         )
         statement = statement.where(search_filter)
         count_statement = count_statement.where(search_filter)
 
     if entity_type:
-        statement = statement.where(
-            AuditLog.entity_type.ilike(f"%{entity_type.strip()}%")
-        )
-        count_statement = count_statement.where(
-            AuditLog.entity_type.ilike(f"%{entity_type.strip()}%")
-        )
+        entity_type_pattern = f"%{entity_type.strip()}%"
+        statement = statement.where(entity_type_col.ilike(entity_type_pattern))
+        count_statement = count_statement.where(entity_type_col.ilike(entity_type_pattern))
 
     if action:
-        statement = statement.where(AuditLog.action == action)
-        count_statement = count_statement.where(AuditLog.action == action)
+        statement = statement.where(action_col == action)
+        count_statement = count_statement.where(action_col == action)
 
     count = session.exec(count_statement).one()
     logs = session.exec(
-        statement.order_by(sort_fn(AuditLog.created_at))
+        statement.order_by(sort_fn(created_at))
         .offset((page - 1) * size)
         .limit(size)
     ).all()
