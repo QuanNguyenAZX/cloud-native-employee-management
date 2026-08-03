@@ -1,6 +1,6 @@
+import uuid
 from os.path import splitext
 from typing import Any
-import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlmodel import col, delete, func, select
@@ -8,15 +8,15 @@ from sqlmodel import col, delete, func, select
 from app import crud
 from app.api.deps import (
     CurrentUser,
-    SessionDep,
     get_current_active_superuser,
+    SessionDep,
 )
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.core.storage import (
-    StorageError,
     create_avatar_key,
     delete_object,
+    StorageError,
     upload_object,
 )
 from app.models import (
@@ -27,9 +27,9 @@ from app.models import (
     UserCreate,
     UserPublic,
     UserRegister,
-    UsersPublic,
     UserUpdate,
     UserUpdateMe,
+    UsersPublic,
 )
 from app.utils import generate_new_account_email, send_email
 

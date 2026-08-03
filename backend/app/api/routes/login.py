@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta, timezone
-from typing import Annotated, Any
 import uuid
+from datetime import datetime, timedelta, timezone
+from typing import Any, Annotated
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException
@@ -11,7 +11,7 @@ from pydantic import ValidationError
 from sqlmodel import Session
 
 from app import crud
-from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
+from app.api.deps import CurrentUser, get_current_active_superuser, SessionDep
 from app.core import security
 from app.core.config import settings
 from app.models import (
