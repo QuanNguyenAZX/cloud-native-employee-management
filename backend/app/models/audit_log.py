@@ -1,6 +1,6 @@
-import uuid
 from datetime import datetime
 from typing import Any
+import uuid
 
 from sqlalchemy import Column, DateTime, JSON
 from sqlmodel import Field, SQLModel
