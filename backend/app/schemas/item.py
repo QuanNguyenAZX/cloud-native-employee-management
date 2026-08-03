@@ -14,8 +14,9 @@ class ItemCreate(ItemBase):
     pass
 
 
-class ItemUpdate(ItemBase):
+class ItemUpdate(SQLModel):
     title: Annotated[str | None, Field(min_length=1, max_length=255)] = None
+    description: Annotated[str | None, Field(max_length=255)] = None
 
 
 class ItemPublic(ItemBase):
