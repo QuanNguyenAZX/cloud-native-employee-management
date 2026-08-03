@@ -27,11 +27,11 @@ router = APIRouter(prefix="/departments", tags=["departments"])
 
 
 def _apply_department_filters(
-    statement,
+    statement: Any,
     *,
     search: str | None,
     is_active: bool | None,
-):
+) -> Any:
     if search:
         pattern = f"%{search.strip()}%"
         statement = statement.where(

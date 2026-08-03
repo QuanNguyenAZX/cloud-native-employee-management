@@ -26,13 +26,13 @@ router = APIRouter(
 
 
 def _apply_employee_filters(
-    statement,
+    statement: Any,
     *,
     search: str | None,
     department_id: uuid.UUID | None,
     role: str | None,
     status: bool | None,
-):
+) -> Any:
     if search:
         pattern = f"%{search.strip()}%"
         statement = statement.where(
