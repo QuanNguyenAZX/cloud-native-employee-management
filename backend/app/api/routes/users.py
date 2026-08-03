@@ -27,9 +27,9 @@ from app.models import (
     UserCreate,
     UserPublic,
     UserRegister,
+    UsersPublic,
     UserUpdate,
     UserUpdateMe,
-    UsersPublic,
 )
 from app.utils import generate_new_account_email, send_email
 
