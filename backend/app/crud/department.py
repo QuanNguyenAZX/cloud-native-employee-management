@@ -6,7 +6,9 @@ from app.models import Department
 from app.schemas.department import DepartmentCreate, DepartmentUpdate
 
 
-def create_department(*, session: Session, department_in: DepartmentCreate) -> Department:
+def create_department(
+    *, session: Session, department_in: DepartmentCreate
+) -> Department:
     db_obj = Department.model_validate(department_in)
     session.add(db_obj)
     session.commit()

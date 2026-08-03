@@ -37,7 +37,9 @@ def _apply_department_filters(
     is_active_col = cast(Any, Department.is_active)
     if search:
         pattern = f"%{search.strip()}%"
-        statement = statement.where(or_(name.ilike(pattern), description.ilike(pattern)))
+        statement = statement.where(
+            or_(name.ilike(pattern), description.ilike(pattern))
+        )
     if is_active is not None:
         statement = statement.where(is_active_col == is_active)
     return statement

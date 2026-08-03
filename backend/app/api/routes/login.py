@@ -35,7 +35,9 @@ from app.utils import (
 router = APIRouter(tags=["login"])
 
 
-def _build_access_token_response(*, user: User, refresh_token: str | None = None) -> Token:
+def _build_access_token_response(
+    *, user: User, refresh_token: str | None = None
+) -> Token:
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         user.id, expires_delta=access_token_expires
@@ -123,9 +125,7 @@ def login_access_token(
 
 
 @router.post("/login/refresh-token", response_model=Token)
-def refresh_access_token(
-    session: SessionDep, body: RefreshTokenRequest
-) -> Token:
+def refresh_access_token(session: SessionDep, body: RefreshTokenRequest) -> Token:
     """
     Refresh access token using a refresh token.
     """

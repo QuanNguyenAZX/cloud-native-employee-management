@@ -60,7 +60,8 @@ def read_dashboard(session: SessionDep, _current_user: CurrentUser) -> Any:
 
     growth_items = sorted(growth_counter.items())
     employee_growth = [
-        DashboardGrowthStat(period=period, count=count) for period, count in growth_items
+        DashboardGrowthStat(period=period, count=count)
+        for period, count in growth_items
     ]
 
     salary_values = [
@@ -85,7 +86,9 @@ def read_dashboard(session: SessionDep, _current_user: CurrentUser) -> Any:
             total_employees=total_employees,
             total_departments=total_departments,
             total_managers=total_managers,
-            average_salary=float(average_salary) if average_salary is not None else None,
+            average_salary=float(average_salary)
+            if average_salary is not None
+            else None,
         ),
         employee_by_department=employee_by_department,
         employee_growth=employee_growth,

@@ -69,7 +69,9 @@ def read_employees(
     department_id: uuid.UUID | None = None,
     role: str | None = None,
     status: bool | None = None,
-    sort_by: Literal["full_name", "email", "job_title", "salary", "created_at"] = "created_at",
+    sort_by: Literal[
+        "full_name", "email", "job_title", "salary", "created_at"
+    ] = "created_at",
     sort_order: Literal["asc", "desc"] = "desc",
 ) -> Any:
     page = max(page, 1)
@@ -111,7 +113,9 @@ def read_employees(
     employees = session.exec(statement).all()
     employees_public = [EmployeePublic.model_validate(item) for item in employees]
     pages = math.ceil(count / size) if count else 1
-    return EmployeesPublic(data=employees_public, count=count, page=page, size=size, pages=pages)
+    return EmployeesPublic(
+        data=employees_public, count=count, page=page, size=size, pages=pages
+    )
 
 
 @router.post("/", response_model=EmployeePublic)

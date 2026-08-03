@@ -55,7 +55,9 @@ def read_audit_logs(
     if entity_type:
         entity_type_pattern = f"%{entity_type.strip()}%"
         statement = statement.where(entity_type_col.ilike(entity_type_pattern))
-        count_statement = count_statement.where(entity_type_col.ilike(entity_type_pattern))
+        count_statement = count_statement.where(
+            entity_type_col.ilike(entity_type_pattern)
+        )
 
     if action:
         statement = statement.where(action_col == action)
@@ -63,9 +65,7 @@ def read_audit_logs(
 
     count = session.exec(count_statement).one()
     logs = session.exec(
-        statement.order_by(sort_fn(created_at))
-        .offset((page - 1) * size)
-        .limit(size)
+        statement.order_by(sort_fn(created_at)).offset((page - 1) * size).limit(size)
     ).all()
     data = [AuditLogPublic.model_validate(item) for item in logs]
     pages = math.ceil(count / size) if count else 1

@@ -180,9 +180,7 @@ async def update_user_avatar_me(
 
 
 @router.delete("/me/avatar", response_model=Message)
-def delete_user_avatar_me(
-    *, session: SessionDep, current_user: CurrentUser
-) -> Message:
+def delete_user_avatar_me(*, session: SessionDep, current_user: CurrentUser) -> Message:
     """
     Remove the current user's avatar.
     """
