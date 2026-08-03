@@ -3,7 +3,7 @@ from datetime import date
 from typing import Any, cast
 
 from fastapi import APIRouter
-from sqlmodel import select, func
+from sqlmodel import func, select
 
 from app.api.deps import CurrentUser, SessionDep
 from app.models import Department, Employee, User, UserRole

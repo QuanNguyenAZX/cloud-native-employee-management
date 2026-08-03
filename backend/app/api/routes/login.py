@@ -1,11 +1,11 @@
-import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
+import uuid
 
+import jwt
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
-import jwt
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session

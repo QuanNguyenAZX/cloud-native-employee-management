@@ -1,7 +1,7 @@
+import uuid
 from datetime import datetime
 from enum import Enum
 from typing import Annotated
-import uuid
 
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel

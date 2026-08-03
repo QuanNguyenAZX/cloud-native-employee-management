@@ -1,6 +1,6 @@
-import uuid
 from os.path import splitext
 from typing import Any
+import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlmodel import col, delete, func, select
@@ -12,13 +12,13 @@ from app.api.deps import (
     get_current_active_superuser,
 )
 from app.core.config import settings
+from app.core.security import get_password_hash, verify_password
 from app.core.storage import (
     StorageError,
     create_avatar_key,
     delete_object,
     upload_object,
 )
-from app.core.security import get_password_hash, verify_password
 from app.models import (
     Item,
     Message,

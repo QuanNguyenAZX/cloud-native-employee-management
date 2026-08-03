@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
-from uuid import uuid4
 from typing import Any
+from uuid import uuid4
 
 import jwt
 from pwdlib import PasswordHash
