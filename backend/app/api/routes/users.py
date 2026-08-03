@@ -270,7 +270,6 @@ def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
     crud.create_audit_log(
         session=session,
         current_user=None,
-        actor_id=actor_id,
         actor_email=actor_email,
         actor_role=str(actor_role),
         actor_label=actor_label,
