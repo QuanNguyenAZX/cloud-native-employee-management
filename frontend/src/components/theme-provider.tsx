@@ -28,29 +28,38 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
+function getSystemTheme(): "dark" | "light" {
+  if (typeof window === "undefined") {
+    return "light"
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light"
+}
+
+function getResolvedTheme(theme: Theme): "dark" | "light" {
+  return theme === "system" ? getSystemTheme() : theme
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "light",
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
-  )
-
-  const getResolvedTheme = useCallback((_theme: Theme): "dark" | "light" => {
-    return "light"
-  }, [])
+  const [theme, setTheme] = useState<Theme>(defaultTheme)
 
   const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">(() =>
     getResolvedTheme(theme),
   )
 
-  const updateTheme = useCallback((_newTheme: Theme) => {
+  const updateTheme = useCallback((newTheme: Theme) => {
     const root = window.document.documentElement
+    const nextTheme = getResolvedTheme(newTheme)
 
     root.classList.remove("light", "dark")
-    root.classList.add("light")
+    root.classList.add(nextTheme)
   }, [])
 
   useEffect(() => {
@@ -61,8 +70,9 @@ export function ThemeProvider({
 
     const handleChange = () => {
       if (theme === "system") {
+        const nextTheme = getResolvedTheme("system")
         updateTheme("system")
-        setResolvedTheme(getResolvedTheme("system"))
+        setResolvedTheme(nextTheme)
       }
     }
 

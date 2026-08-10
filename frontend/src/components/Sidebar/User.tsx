@@ -27,18 +27,18 @@ interface UserInfoProps {
 
 function UserInfo({ fullName, email, avatarUrl }: UserInfoProps) {
   return (
-    <div className="flex items-center gap-2.5 w-full min-w-0">
+    <div className="flex w-full min-w-0 items-center gap-2.5">
       <Avatar className="size-8">
         {avatarUrl ? (
           <AvatarImage src={avatarUrl} alt={fullName || "User"} />
         ) : null}
-        <AvatarFallback className="bg-zinc-600 text-white">
+        <AvatarFallback className="bg-[#5E6AD2]/20 text-[#EDEDEF]">
           {getInitials(fullName || "User")}
         </AvatarFallback>
       </Avatar>
-      <div className="flex flex-col items-start min-w-0">
-        <p className="text-sm font-medium truncate w-full">{fullName}</p>
-        <p className="text-xs text-muted-foreground truncate w-full">{email}</p>
+      <div className="flex min-w-0 flex-col items-start">
+        <p className="w-full truncate text-sm font-medium">{fullName}</p>
+        <p className="w-full truncate text-xs text-muted-foreground">{email}</p>
       </div>
     </div>
   )
@@ -78,7 +78,7 @@ export function User({ user }: { user: any }) {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-2xl border-white/10 bg-[#09090c]/95 p-2 shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_18px_50px_rgba(0,0,0,0.36)] backdrop-blur-xl"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
