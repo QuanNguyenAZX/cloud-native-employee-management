@@ -331,7 +331,11 @@ function DashboardContent() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {overview.map((item) => (
-                <SummaryChip key={item.label} label={item.label} value={item.value} />
+                <SummaryChip
+                  key={item.label}
+                  label={item.label}
+                  value={item.value}
+                />
               ))}
             </div>
           </div>
@@ -340,7 +344,9 @@ function DashboardContent() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(94,106,210,0.16),transparent_45%)]" />
             <div className="relative space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">Snapshot</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Snapshot
+                </p>
                 <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[11px] uppercase tracking-[0.2em] text-emerald-300">
                   Live
                 </span>
@@ -361,7 +367,9 @@ function DashboardContent() {
                 </div>
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Department coverage</span>
+                    <span className="text-muted-foreground">
+                      Department coverage
+                    </span>
                     <span className="font-medium text-foreground">
                       {data.summary.total_departments}
                     </span>
@@ -375,7 +383,9 @@ function DashboardContent() {
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Manager allocation</span>
+                    <span className="text-muted-foreground">
+                      Manager allocation
+                    </span>
                     <span className="font-medium text-foreground">
                       {data.summary.total_managers}
                     </span>
@@ -459,7 +469,9 @@ function DashboardContent() {
                 className="group rounded-2xl border border-white/8 bg-white/[0.04] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-200 hover:-translate-y-1 hover:border-white/12 hover:bg-white/[0.06]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium text-foreground">{item.label}</div>
+                  <div className="text-sm font-medium text-foreground">
+                    {item.label}
+                  </div>
                   <div
                     className={cn(
                       "h-2.5 w-2.5 rounded-full shadow-[0_0_12px_currentColor]",
