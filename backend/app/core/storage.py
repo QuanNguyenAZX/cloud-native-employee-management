@@ -46,7 +46,7 @@ def _sign(key: bytes, msg: str) -> bytes:
 
 
 def _signing_key(secret_key: str, date_stamp: str, region: str) -> bytes:
-    k_date = _sign(f"AWS4{secret_key}".encode("utf-8"), date_stamp)
+    k_date = _sign(f"AWS4{secret_key}".encode(), date_stamp)
     k_region = _sign(k_date, region)
     k_service = _sign(k_region, "s3")
     return _sign(k_service, "aws4_request")

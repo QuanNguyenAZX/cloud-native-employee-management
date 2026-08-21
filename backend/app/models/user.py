@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, String
+from sqlalchemy import Column, DateTime, String
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.core.storage import build_object_url
@@ -18,13 +18,16 @@ class User(SQLModel, table=True):
     email: str = Field(unique=True, index=True, max_length=255)
     is_active: bool = True
     is_superuser: bool = False
-    role: UserRole = Field(default=UserRole.employee, sa_type=String(length=20))
+    role: str = Field(
+        default=UserRole.employee.value,
+        sa_column=Column(String(length=20), nullable=False),
+    )
     full_name: str | None = Field(default=None, max_length=255)
     avatar_key: str | None = Field(default=None, max_length=255)
     hashed_password: str
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
-        sa_type=DateTime(timezone=True),  # type: ignore
+        sa_column=Column(DateTime(timezone=True), nullable=True),
     )
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
 

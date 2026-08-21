@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime
+from sqlalchemy import Column, DateTime
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.utils import get_datetime_utc
@@ -18,7 +18,7 @@ class Department(SQLModel, table=True):
     is_active: bool = True
     created_at: datetime | None = Field(
         default_factory=get_datetime_utc,
-        sa_type=DateTime(timezone=True),  # type: ignore
+        sa_column=Column(DateTime(timezone=True), nullable=True),
     )
     employees: list["Employee"] = Relationship(
         back_populates="department", cascade_delete=True

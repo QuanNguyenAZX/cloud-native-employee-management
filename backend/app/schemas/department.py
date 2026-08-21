@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Annotated
 
 from sqlmodel import Field, SQLModel
 
@@ -15,8 +16,8 @@ class DepartmentCreate(DepartmentBase):
 
 
 class DepartmentUpdate(SQLModel):
-    name: str | None = Field(default=None, min_length=1, max_length=255)
-    description: str | None = Field(default=None, max_length=255)
+    name: Annotated[str | None, Field(min_length=1, max_length=255)] = None
+    description: Annotated[str | None, Field(max_length=255)] = None
     is_active: bool | None = None
 
 

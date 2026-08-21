@@ -46,9 +46,7 @@ def create_audit_log(
     resolved_actor_email = (
         actor_email if actor_email is not None else (actor.email if actor else None)
     )
-    resolved_actor_role = (
-        actor_role if actor_role is not None else _actor_role(actor)
-    )
+    resolved_actor_role = actor_role if actor_role is not None else _actor_role(actor)
     resolved_actor_label = (
         actor_label if actor_label is not None else _actor_label(actor)
     )

@@ -1,9 +1,9 @@
 import {
   type ColumnDef,
-  type OnChangeFn,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  type OnChangeFn,
   type PaginationState,
   useReactTable,
 } from "@tanstack/react-table"

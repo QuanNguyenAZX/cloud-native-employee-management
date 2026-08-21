@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
+from typing import Any
 
-from sqlalchemy import DateTime, JSON
+from sqlalchemy import JSON, Column, DateTime
 from sqlmodel import Field, SQLModel
 
 from app.models.utils import get_datetime_utc
@@ -20,9 +21,13 @@ class AuditLog(SQLModel, table=True):
     entity_type: str = Field(max_length=50, index=True)
     entity_id: str | None = Field(default=None, max_length=64, index=True)
     detail: str = Field(max_length=255)
-    before_data: dict | None = Field(default=None, sa_type=JSON)
-    after_data: dict | None = Field(default=None, sa_type=JSON)
+    before_data: dict[str, Any] | None = Field(
+        default=None, sa_column=Column(JSON, nullable=True)
+    )
+    after_data: dict[str, Any] | None = Field(
+        default=None, sa_column=Column(JSON, nullable=True)
+    )
     created_at: datetime = Field(
         default_factory=get_datetime_utc,
-        sa_type=DateTime(timezone=True),  # type: ignore
+        sa_column=Column(DateTime(timezone=True), nullable=False),
     )

@@ -1,9 +1,9 @@
+import uuid
 from datetime import datetime
 from enum import Enum
-import uuid
+from typing import Annotated
 
 from pydantic import EmailStr
-from sqlalchemy import String
 from sqlmodel import Field, SQLModel
 
 
@@ -17,10 +17,7 @@ class UserBase(SQLModel):
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     is_active: bool = True
     is_superuser: bool = False
-    role: UserRole = Field(
-        default=UserRole.employee,
-        sa_type=String(length=20),
-    )
+    role: UserRole = Field(default=UserRole.employee)
     full_name: str | None = Field(default=None, max_length=255)
 
 
@@ -34,9 +31,13 @@ class UserRegister(SQLModel):
     full_name: str | None = Field(default=None, max_length=255)
 
 
-class UserUpdate(UserBase):
-    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore[assignment]
-    password: str | None = Field(default=None, min_length=8, max_length=128)
+class UserUpdate(SQLModel):
+    email: Annotated[EmailStr | None, Field(max_length=255)] = None
+    password: Annotated[str | None, Field(min_length=8, max_length=128)] = None
+    is_active: bool | None = None
+    is_superuser: bool | None = None
+    role: UserRole | None = None
+    full_name: Annotated[str | None, Field(max_length=255)] = None
 
 
 class UserUpdateMe(SQLModel):

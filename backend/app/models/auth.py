@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime
+from sqlalchemy import Column, DateTime
 from sqlmodel import Field, SQLModel
 
 from app.models.utils import get_datetime_utc
@@ -18,9 +18,11 @@ class RefreshToken(SQLModel, table=True):
     token_type: str = Field(default="refresh", max_length=20)
     created_at: datetime = Field(
         default_factory=get_datetime_utc,
-        sa_type=DateTime(timezone=True),  # type: ignore
+        sa_column=Column(DateTime(timezone=True), nullable=False),
     )
-    expires_at: datetime = Field(sa_type=DateTime(timezone=True))
+    expires_at: datetime = Field(
+        sa_column=Column(DateTime(timezone=True), nullable=False)
+    )
     revoked_at: datetime | None = Field(
-        default=None, sa_type=DateTime(timezone=True)
+        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
     )

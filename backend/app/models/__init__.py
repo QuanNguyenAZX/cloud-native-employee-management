@@ -6,8 +6,8 @@ from app.models.department import Department
 from app.models.employee import Employee
 from app.models.item import Item
 from app.models.user import User
-from app.schemas.common import Message
 from app.schemas.audit_log import AuditLogPublic, AuditLogsPublic
+from app.schemas.common import Message
 from app.schemas.department import (
     DepartmentBase,
     DepartmentCreate,

@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router"
-import { type PaginationState } from "@tanstack/react-table"
+import type { PaginationState } from "@tanstack/react-table"
 import { Search, X } from "lucide-react"
 import { Suspense } from "react"
 import { z } from "zod"
@@ -74,7 +74,9 @@ export const Route = createFileRoute("/_layout/employees")({
   component: Employees,
   beforeLoad: async () => {
     const user = await UsersService.readUserMe()
-    if (!(user.is_superuser || user.role === "admin" || user.role === "manager")) {
+    if (
+      !(user.is_superuser || user.role === "admin" || user.role === "manager")
+    ) {
       throw redirect({ to: "/" })
     }
   },
@@ -280,7 +282,8 @@ function EmployeesTableContent() {
         <div className="space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">Employees</h1>
           <p className="text-muted-foreground">
-            Search, filter, and manage employee records with server-side pagination.
+            Search, filter, and manage employee records with server-side
+            pagination.
           </p>
         </div>
         <AddEmployee departments={departments.data} />

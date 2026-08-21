@@ -1,6 +1,6 @@
 import math
 import uuid
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import asc, desc, or_
@@ -26,30 +26,37 @@ router = APIRouter(
 
 
 def _apply_employee_filters(
-    statement,
+    statement: Any,
     *,
     search: str | None,
     department_id: uuid.UUID | None,
     role: str | None,
     status: bool | None,
-):
+) -> Any:
+    full_name = cast(Any, Employee.full_name)
+    email = cast(Any, Employee.email)
+    job_title = cast(Any, Employee.job_title)
+    phone = cast(Any, Employee.phone)
+    department_name = cast(Any, Department.name)
+    department_id_col = cast(Any, Employee.department_id)
+    is_active_col = cast(Any, Employee.is_active)
     if search:
         pattern = f"%{search.strip()}%"
         statement = statement.where(
             or_(
-                Employee.full_name.ilike(pattern),
-                Employee.email.ilike(pattern),
-                Employee.job_title.ilike(pattern),
-                Employee.phone.ilike(pattern),
-                Department.name.ilike(pattern),
+                full_name.ilike(pattern),
+                email.ilike(pattern),
+                job_title.ilike(pattern),
+                phone.ilike(pattern),
+                department_name.ilike(pattern),
             )
         )
     if department_id:
-        statement = statement.where(Employee.department_id == department_id)
+        statement = statement.where(department_id_col == department_id)
     if role:
-        statement = statement.where(Employee.job_title.ilike(f"%{role.strip()}%"))
+        statement = statement.where(job_title.ilike(f"%{role.strip()}%"))
     if status is not None:
-        statement = statement.where(Employee.is_active == status)
+        statement = statement.where(is_active_col == status)
     return statement
 
 
@@ -62,17 +69,19 @@ def read_employees(
     department_id: uuid.UUID | None = None,
     role: str | None = None,
     status: bool | None = None,
-    sort_by: Literal["full_name", "email", "job_title", "salary", "created_at"] = "created_at",
+    sort_by: Literal[
+        "full_name", "email", "job_title", "salary", "created_at"
+    ] = "created_at",
     sort_order: Literal["asc", "desc"] = "desc",
 ) -> Any:
     page = max(page, 1)
     size = min(max(size, 1), 100)
     sort_map = {
-        "full_name": Employee.full_name,
-        "email": Employee.email,
-        "job_title": Employee.job_title,
-        "salary": Employee.salary,
-        "created_at": Employee.created_at,
+        "full_name": cast(Any, Employee.full_name),
+        "email": cast(Any, Employee.email),
+        "job_title": cast(Any, Employee.job_title),
+        "salary": cast(Any, Employee.salary),
+        "created_at": cast(Any, Employee.created_at),
     }
     sort_column = sort_map[sort_by]
     sort_fn = asc if sort_order == "asc" else desc
@@ -104,7 +113,9 @@ def read_employees(
     employees = session.exec(statement).all()
     employees_public = [EmployeePublic.model_validate(item) for item in employees]
     pages = math.ceil(count / size) if count else 1
-    return EmployeesPublic(data=employees_public, count=count, page=page, size=size, pages=pages)
+    return EmployeesPublic(
+        data=employees_public, count=count, page=page, size=size, pages=pages
+    )
 
 
 @router.post("/", response_model=EmployeePublic)

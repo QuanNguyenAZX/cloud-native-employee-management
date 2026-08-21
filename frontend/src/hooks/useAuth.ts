@@ -29,7 +29,10 @@ const useAuth = () => {
   })
 
   useEffect(() => {
-    if (userError instanceof ApiError && [401, 403, 404].includes(userError.status)) {
+    if (
+      userError instanceof ApiError &&
+      [401, 403, 404].includes(userError.status)
+    ) {
       localStorage.removeItem("access_token")
       navigate({ to: "/login" })
     }

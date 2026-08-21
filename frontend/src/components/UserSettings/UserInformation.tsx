@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { UsersService, type UserUpdateMe } from "@/client"
-import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -148,7 +148,9 @@ const UserInformation = () => {
                 type="button"
                 variant="secondary"
                 onClick={() => avatarInputRef.current?.click()}
-                disabled={avatarMutation.isPending || deleteAvatarMutation.isPending}
+                disabled={
+                  avatarMutation.isPending || deleteAvatarMutation.isPending
+                }
               >
                 Upload Avatar
               </Button>
@@ -156,7 +158,11 @@ const UserInformation = () => {
                 type="button"
                 variant="outline"
                 onClick={() => deleteAvatarMutation.mutate()}
-                disabled={!currentUser?.avatar_url || avatarMutation.isPending || deleteAvatarMutation.isPending}
+                disabled={
+                  !currentUser?.avatar_url ||
+                  avatarMutation.isPending ||
+                  deleteAvatarMutation.isPending
+                }
               >
                 Remove
               </Button>

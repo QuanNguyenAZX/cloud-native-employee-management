@@ -95,9 +95,7 @@ const AddEmployee = ({ departments }: AddEmployeeProps) => {
     mutation.mutate({
       ...data,
       salary:
-        data.salary && data.salary.trim() !== ""
-          ? Number(data.salary)
-          : null,
+        data.salary && data.salary.trim() !== "" ? Number(data.salary) : null,
       birth_date:
         data.birth_date && data.birth_date.trim() !== ""
           ? data.birth_date
@@ -187,7 +185,13 @@ const AddEmployee = ({ departments }: AddEmployeeProps) => {
                   <FormItem>
                     <FormLabel>Salary</FormLabel>
                     <FormControl>
-                      <Input type="number" min="0" step="1" placeholder="Salary" {...field} />
+                      <Input
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="Salary"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

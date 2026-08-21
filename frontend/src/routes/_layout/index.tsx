@@ -6,15 +6,15 @@ import {
   ChartColumn,
   CircleDollarSign,
   Sparkles,
-  Users,
   UserRound,
+  Users,
 } from "lucide-react"
 import type { ReactNode } from "react"
 
 import { DashboardService } from "@/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
 import useAuth from "@/hooks/useAuth"
+import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_layout/")({
   component: Dashboard,
@@ -107,7 +107,9 @@ function MiniBarChart({
             {data.map((item) => (
               <div key={item.label} className="space-y-2">
                 <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="font-medium text-foreground">{item.label}</span>
+                  <span className="font-medium text-foreground">
+                    {item.label}
+                  </span>
                   <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
                     {item.value}
                   </span>
@@ -184,10 +186,19 @@ function LineChart({
       <CardContent className="px-4 pb-6 sm:px-6">
         <div className="overflow-hidden rounded-3xl border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]">
           <svg viewBox={`0 0 ${width} ${height}`} className="h-[280px] w-full">
+            <title>{title}</title>
             <defs>
               <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgb(94 106 210)" stopOpacity="0.38" />
-                <stop offset="100%" stopColor="rgb(94 106 210)" stopOpacity="0.02" />
+                <stop
+                  offset="0%"
+                  stopColor="rgb(94 106 210)"
+                  stopOpacity="0.38"
+                />
+                <stop
+                  offset="100%"
+                  stopColor="rgb(94 106 210)"
+                  stopOpacity="0.02"
+                />
               </linearGradient>
             </defs>
             {[0.25, 0.5, 0.75].map((fraction) => (
@@ -279,7 +290,8 @@ function DashboardContent() {
         </CardHeader>
         <CardContent className="px-6 pb-6">
           <p className="text-sm leading-relaxed text-muted-foreground">
-            We could not load dashboard data right now. Please refresh or try again later.
+            We could not load dashboard data right now. Please refresh or try
+            again later.
           </p>
         </CardContent>
       </Card>
@@ -325,13 +337,18 @@ function DashboardContent() {
                 Hi, {currentUser?.full_name || currentUser?.email}
               </h1>
               <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                A calm, high-signal snapshot of your team. The layout is tuned for quick scanning,
-                subtle depth, and clear hierarchy even when data is still sparse.
+                A calm, high-signal snapshot of your team. The layout is tuned
+                for quick scanning, subtle depth, and clear hierarchy even when
+                data is still sparse.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {overview.map((item) => (
-                <SummaryChip key={item.label} label={item.label} value={item.value} />
+                <SummaryChip
+                  key={item.label}
+                  label={item.label}
+                  value={item.value}
+                />
               ))}
             </div>
           </div>
@@ -340,7 +357,9 @@ function DashboardContent() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(94,106,210,0.16),transparent_45%)]" />
             <div className="relative space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-muted-foreground">Snapshot</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Snapshot
+                </p>
                 <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[11px] uppercase tracking-[0.2em] text-emerald-300">
                   Live
                 </span>
@@ -361,7 +380,9 @@ function DashboardContent() {
                 </div>
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Department coverage</span>
+                    <span className="text-muted-foreground">
+                      Department coverage
+                    </span>
                     <span className="font-medium text-foreground">
                       {data.summary.total_departments}
                     </span>
@@ -375,7 +396,9 @@ function DashboardContent() {
                     />
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Manager allocation</span>
+                    <span className="text-muted-foreground">
+                      Manager allocation
+                    </span>
                     <span className="font-medium text-foreground">
                       {data.summary.total_managers}
                     </span>
@@ -459,7 +482,9 @@ function DashboardContent() {
                 className="group rounded-2xl border border-white/8 bg-white/[0.04] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all duration-200 hover:-translate-y-1 hover:border-white/12 hover:bg-white/[0.06]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium text-foreground">{item.label}</div>
+                  <div className="text-sm font-medium text-foreground">
+                    {item.label}
+                  </div>
                   <div
                     className={cn(
                       "h-2.5 w-2.5 rounded-full shadow-[0_0_12px_currentColor]",
