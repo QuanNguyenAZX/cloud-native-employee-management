@@ -188,7 +188,13 @@ const EditEmployee = ({
                   <FormItem>
                     <FormLabel>Salary</FormLabel>
                     <FormControl>
-                      <Input type="number" min="0" step="1" placeholder="Salary" {...field} />
+                      <Input
+                        type="number"
+                        min="0"
+                        step="1"
+                        placeholder="Salary"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

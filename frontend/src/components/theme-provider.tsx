@@ -81,7 +81,7 @@ export function ThemeProvider({
     return () => {
       mediaQuery.removeEventListener("change", handleChange)
     }
-  }, [theme, updateTheme, getResolvedTheme])
+  }, [theme, updateTheme])
 
   const value = {
     theme,
