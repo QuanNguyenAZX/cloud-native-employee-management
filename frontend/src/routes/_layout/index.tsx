@@ -78,6 +78,7 @@ function MiniBarChart({
 }) {
   const max = Math.max(...data.map((item) => item.value), 1)
   return (
+<<<<<<< Updated upstream
     <Card className="border-border/60 bg-card/80 shadow-sm backdrop-blur">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
@@ -90,6 +91,36 @@ function MiniBarChart({
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">{item.label}</span>
                 <span className="text-muted-foreground">{item.value}</span>
+=======
+    <Card className="overflow-hidden border-white/10 bg-white/[0.04] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_16px_40px_rgba(0,0,0,0.28)]">
+      <CardHeader className="space-y-2 px-6 pt-6">
+        <CardTitle className="text-xl font-semibold tracking-[-0.03em]">
+          {title}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {subtitle}
+        </p>
+      </CardHeader>
+      <CardContent className="px-6 pb-6">
+        {data.length ? (
+          <div className="space-y-4">
+            {data.map((item) => (
+              <div key={item.label} className="space-y-2">
+                <div className="flex items-center justify-between gap-4 text-sm">
+                  <span className="font-medium text-foreground">
+                    {item.label}
+                  </span>
+                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
+                    {item.value}
+                  </span>
+                </div>
+                <div className="h-2.5 overflow-hidden rounded-full bg-white/[0.05]">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#5E6AD2] via-sky-400 to-cyan-300 shadow-[0_0_16px_rgba(94,106,210,0.35)]"
+                    style={{ width: `${(item.value / max) * 100}%` }}
+                  />
+                </div>
+>>>>>>> Stashed changes
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-muted">
                 <div
@@ -119,10 +150,21 @@ function LineChart({
   const padding = 24
   if (!data.length) {
     return (
+<<<<<<< Updated upstream
       <Card className="border-border/60 bg-card/80 shadow-sm backdrop-blur">
         <CardHeader>
           <CardTitle>{title}</CardTitle>
           <p className="text-sm text-muted-foreground">{subtitle}</p>
+=======
+      <Card className="overflow-hidden border-white/10 bg-white/[0.04] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_16px_40px_rgba(0,0,0,0.28)]">
+        <CardHeader className="space-y-2 px-6 pt-6">
+          <CardTitle className="text-xl font-semibold tracking-[-0.03em]">
+            {title}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {subtitle}
+          </p>
+>>>>>>> Stashed changes
         </CardHeader>
         <CardContent>
           <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed text-sm text-muted-foreground">
@@ -144,10 +186,21 @@ function LineChart({
     .join(" ")
 
   return (
+<<<<<<< Updated upstream
     <Card className="border-border/60 bg-card/80 shadow-sm backdrop-blur">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
+=======
+    <Card className="overflow-hidden border-white/10 bg-white/[0.04] shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_16px_40px_rgba(0,0,0,0.28)]">
+      <CardHeader className="space-y-2 px-6 pt-6">
+        <CardTitle className="text-xl font-semibold tracking-[-0.03em]">
+          {title}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {subtitle}
+        </p>
+>>>>>>> Stashed changes
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
