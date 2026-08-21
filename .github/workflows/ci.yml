@@ -74,6 +74,10 @@ jobs:
         working-directory: backend
         run: bash scripts/lint.sh
 
+      - name: Prepare backend database
+        working-directory: backend
+        run: bash scripts/prestart.sh
+
       - name: Backend tests
         working-directory: backend
         run: bash scripts/test.sh

@@ -99,7 +99,9 @@ function MiniBarChart({
         <CardTitle className="text-xl font-semibold tracking-[-0.03em]">
           {title}
         </CardTitle>
-        <p className="text-sm text-muted-foreground">{subtitle}</p>
+        <p className="text-sm text-muted-foreground">
+          {subtitle}
+        </p>
       </CardHeader>
       <CardContent className="px-6 pb-6">
         {data.length ? (
@@ -107,7 +109,9 @@ function MiniBarChart({
             {data.map((item) => (
               <div key={item.label} className="space-y-2">
                 <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="font-medium text-foreground">{item.label}</span>
+                  <span className="font-medium text-foreground">
+                    {item.label}
+                  </span>
                   <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-xs text-muted-foreground">
                     {item.value}
                   </span>
@@ -151,7 +155,9 @@ function LineChart({
           <CardTitle className="text-xl font-semibold tracking-[-0.03em]">
             {title}
           </CardTitle>
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
+          <p className="text-sm text-muted-foreground">
+            {subtitle}
+          </p>
         </CardHeader>
         <CardContent className="px-6 pb-6">
           <div className="flex h-[280px] items-center justify-center rounded-3xl border border-dashed border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] text-sm text-muted-foreground">
@@ -179,7 +185,9 @@ function LineChart({
         <CardTitle className="text-xl font-semibold tracking-[-0.03em]">
           {title}
         </CardTitle>
-        <p className="text-sm text-muted-foreground">{subtitle}</p>
+        <p className="text-sm text-muted-foreground">
+          {subtitle}
+        </p>
       </CardHeader>
       <CardContent className="px-4 pb-6 sm:px-6">
         <div className="overflow-hidden rounded-3xl border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]">
