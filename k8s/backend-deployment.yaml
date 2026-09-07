@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-backend
+  namespace: employee-management
+  labels:
+    app.kubernetes.io/name: employee-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: employee-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: employee-backend
+    spec:
+      containers:
+        - name: backend
+          image: employee-backend:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: employee-management-config
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: employee-management-secret
+                  key: SECRET_KEY
+            - name: FIRST_SUPERUSER
+              valueFrom:
+                secretKeyRef:
+                  name: employee-management-secret
+                  key: FIRST_SUPERUSER
+            - name: FIRST_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: employee-management-secret
+                  key: FIRST_SUPERUSER_PASSWORD
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: employee-management-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: employee-management-secret
+                  key: POSTGRES_PASSWORD
+            - name: OBJECT_STORAGE_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: employee-management-secret
+                  key: OBJECT_STORAGE_ACCESS_KEY
+            - name: OBJECT_STORAGE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: employee-management-secret
+                  key: OBJECT_STORAGE_SECRET_KEY
+          readinessProbe:
+            httpGet:
+              path: /api/v1/utils/health-check/
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /api/v1/utils/health-check/
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          startupProbe:
+            httpGet:
+              path: /api/v1/utils/health-check/
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 60
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi

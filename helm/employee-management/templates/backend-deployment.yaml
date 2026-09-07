@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "employee-management.backendName" . }}
+  namespace: {{ include "employee-management.namespace" . }}
+  labels:
+    {{- include "employee-management.backendLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "employee-management.backendName" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "employee-management.backendLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.targetPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "employee-management.name" . }}-config
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "employee-management.name" . }}-secret
+                  key: SECRET_KEY
+            - name: FIRST_SUPERUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "employee-management.name" . }}-secret
+                  key: FIRST_SUPERUSER
+            - name: FIRST_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "employee-management.name" . }}-secret
+                  key: FIRST_SUPERUSER_PASSWORD
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "employee-management.name" . }}-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "employee-management.name" . }}-secret
+                  key: POSTGRES_PASSWORD
+            - name: OBJECT_STORAGE_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "employee-management.name" . }}-secret
+                  key: OBJECT_STORAGE_ACCESS_KEY
+            - name: OBJECT_STORAGE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "employee-management.name" . }}-secret
+                  key: OBJECT_STORAGE_SECRET_KEY
+          readinessProbe:
+            httpGet:
+              path: /api/v1/utils/health-check/
+              port: {{ .Values.backend.service.targetPort }}
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /api/v1/utils/health-check/
+              port: {{ .Values.backend.service.targetPort }}
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          startupProbe:
+            httpGet:
+              path: /api/v1/utils/health-check/
+              port: {{ .Values.backend.service.targetPort }}
+            periodSeconds: 10
+            failureThreshold: 60
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "employee-management.name" . }}-config
+  namespace: {{ include "employee-management.namespace" . }}
+data:
+  PROJECT_NAME: {{ .Values.backend.projectName | quote }}
+  ENVIRONMENT: {{ .Values.backend.environment | quote }}
+  FRONTEND_HOST: {{ .Values.backend.frontendHost | quote }}
+  BACKEND_CORS_ORIGINS: {{ .Values.backend.corsOrigins | quote }}
+  POSTGRES_SERVER: {{ .Values.backend.postgresServer | quote }}
+  POSTGRES_PORT: {{ .Values.backend.postgresPort | quote }}
+  POSTGRES_DB: {{ .Values.backend.postgresDb | quote }}
+  OBJECT_STORAGE_ENDPOINT: {{ .Values.backend.objectStorageEndpoint | quote }}
+  OBJECT_STORAGE_BUCKET: {{ .Values.backend.objectStorageBucket | quote }}
+  OBJECT_STORAGE_REGION: {{ .Values.backend.objectStorageRegion | quote }}
+  OBJECT_STORAGE_FORCE_PATH_STYLE: {{ .Values.backend.objectStorageForcePathStyle | quote }}
+  SMTP_HOST: {{ .Values.backend.smtp.host | quote }}
+  SMTP_PORT: {{ .Values.backend.smtp.port | quote }}
+  SMTP_TLS: {{ .Values.backend.smtp.tls | quote }}
+  SMTP_SSL: {{ .Values.backend.smtp.ssl | quote }}
+  EMAILS_FROM_EMAIL: {{ .Values.backend.smtp.fromEmail | quote }}
