@@ -1,0 +1,13 @@
+.DS_Store
+.git/
+.gitignore
+.idea/
+.vscode/
+*.swp
+*.tmp
+*.bak
+charts/
+tmp/
+node_modules/
+dist/
+coverage/

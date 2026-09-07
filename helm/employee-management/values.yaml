@@ -1,0 +1,115 @@
+namespace:
+  create: true
+  name: employee-management
+
+backend:
+  replicaCount: 1
+  image:
+    repository: backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 80
+    targetPort: 8000
+  environment: local
+  projectName: Employee Management
+  frontendHost: http://employee.local
+  corsOrigins: http://employee.local
+  postgresServer: postgres
+  postgresPort: 5432
+  postgresDb: app
+  objectStorageEndpoint: http://minio:9000
+  objectStorageBucket: avatars
+  objectStorageRegion: us-east-1
+  objectStorageForcePathStyle: true
+  smtp:
+    host: ""
+    port: 587
+    tls: true
+    ssl: false
+    fromEmail: noreply@example.com
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  apiBaseUrl: /api/v1
+  service:
+    port: 80
+    targetPort: 80
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+postgres:
+  image:
+    repository: postgres
+    tag: "18"
+    pullPolicy: IfNotPresent
+  service:
+    port: 5432
+  database: app
+  username: postgres
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+minio:
+  image:
+    repository: minio/minio
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 9000
+  rootUser: employee-minio
+  rootPassword: employee-minio-secret
+  consolePort: 9001
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+secrets:
+  secretKey: dev-secret-key-change-me-please
+  firstSuperuser: admin@example.com
+  firstSuperuserPassword: Admin123!ChangeMe
+  postgresPassword: postgres-password-change-me
+  objectStorageAccessKey: employee-minio
+  objectStorageSecretKey: employee-minio-secret
+
+persistence:
+  postgres:
+    enabled: true
+    size: 10Gi
+    storageClassName: ""
+  minio:
+    enabled: true
+    size: 5Gi
+    storageClassName: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  host: employee.local
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"

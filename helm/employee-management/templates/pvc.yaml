@@ -1,0 +1,33 @@
+{{- if .Values.persistence.postgres.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+  namespace: {{ include "employee-management.namespace" . }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.persistence.postgres.storageClassName }}
+  storageClassName: {{ .Values.persistence.postgres.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.postgres.size | quote }}
+---
+{{- end }}
+{{- if .Values.persistence.minio.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-data
+  namespace: {{ include "employee-management.namespace" . }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.persistence.minio.storageClassName }}
+  storageClassName: {{ .Values.persistence.minio.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.minio.size | quote }}
+{{- end }}

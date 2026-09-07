@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "employee-management.minioName" . }}
+  namespace: {{ include "employee-management.namespace" . }}
+  labels:
+    {{- include "employee-management.minioLabels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ include "employee-management.minioName" . }}
+  ports:
+    - name: s3
+      port: {{ .Values.minio.service.port }}
+      targetPort: {{ .Values.minio.service.port }}
